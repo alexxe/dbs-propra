@@ -1,0 +1,766 @@
+openapi: 3.0.2
+info:
+  title: DBS Programmierpraktikum - Phase 4 - API-Spezifikation
+  description: >-
+    In der folgenden Liste finden Sie die <b>für die Anwendergruppen
+    spezifischen Grundfunktionalitäten</b>. Es müssen <b>alle folgenden
+    allgemeinen Bedingungen</b> eingehalten werden:
+    <ul>
+      <li><b>Bei einer gültigen <code>GET</code>-Anfrage wird entweder ein JSON-Array von JSON-Objekten, falls die Ressource eine Sammlung von Entitäten darstellt, oder ein JSON-Objekt, falls die Ressource eine einzelne Entität darstellt, zurückgegeben</b> und dies mit einem Code <code>200</code> belegt. Wird die <code>GET</code>-Anfrage auf einer nicht vorhandenen Ressource ausgeführt, so wird mit Code <code>404</code> geantwortet. Ist die Ressource woanders zu finden, wird dies mit dem Code <code>301</code> und dem Link im Header belegt. Eine <code>GET</code>-Anfrage auf einer Ressource, die eine Sammlung von Entitäten darstellt, kann durch Übergabe von bestimmten Parametern und dazugehörigen Werten <b>case-insensitive gefiltert</b> werden. Dabei muss jede Entität in der Sammlung allen Parametern gleichzeitig genügen. Die Sammlung wird in der Antwort in ein JSON-Array gekapselt.</li>
+      <li><b>Bei <code>POST</code>-Anfragen werden alle Parameter bis auf diejenigen Parameter der entsprechenden Ressource benötigt, die Standardwerte besitzen.</b> Wird die <code>POST</code>-Anfrage auf einer nicht vorhandenen Ressource ausgeführt, so wird mit Code <code>404</code> geantwortet. Ist die Ressource vorhanden, aber die Anfragen wegen irgendeiner anderen Sache (ungültige Werte, zu wenig Parameter, ...) ungültig, so wird dies mit einem Code <code>400</code> beantwortet, anonsten mit Code <code>201</code> und dem Link zur neuen Ressource im Header belegt.</li>
+      <li><b>Bei <code>PATCH</code>-Anfragen werden nur diejenigen Parameter benötigt, die geändert werden sollen, folglich mindestens einer.</b> Wird die <code>PATCH</code>-Anfrage auf einer nicht vorhandenen Ressource ausgeführt, so wird mit Code <code>404</code> geantwortet. Ist die Ressource vorhanden, aber die Anfragen wegen irgendeiner anderen Sache (ungültige Werte, ...) ungültig, so wird dies mit einem Code <code>400</code> beantwortet, anonsten mit Code <code>204</code> belegt.</li>
+      <li><b>Bei einer gültigen <code>DELETE</code>-Anfrage wird der Code <code>204</code> zurückgegeben.</b> Ist die Ressource nicht vorhanden, wird dies mit Code <code>404</code> belegt.</li>
+      <li><b>Bereiche mit einem Schlosssymbol werden durch eine HTTP-Basisauthentifizierung abgesichert.</b> Wird einer dieser Bereiche ohne oder mit falschen Anmeldedaten aufgerufen, so wird dies mit einem <code>401</code> und dem Header <code>WWW-Authenticate</code> belegt. Sind die Anmeldedaten richtig, aber der Anwender ist nicht authorisiert, so wird dies mit einem Code <code>403</code> belegt.</li>
+      <li><b>In Antworten mit Code <code>4xx</code> wird ein JSON-Objekt, das mindestens den Schlüssel <code>"message"</code> mit dem Wert <code>&lt;Fehlermeldung&gt;</code> enthält, zurückgegeben</b>, wobei <code>&lt;Fehlermeldung&gt;</code> eine für den Umstand entsprechende Fehlermeldung ist. Bei einer auftretenden Exception reicht dafür die Nachricht dieser.</li>
+      <li><b>Antworten auf gültige <code>POST</code>- und <code>PATCH</code>-Anfragen beinhalten nichts.</b></li>
+      <li><b>Anfragen sind vom Typ <code>multipart/form-data</code>, Antworten sind vom Typ <code>application/json;charset=UTF-8</code>.</b></li>
+      <li><b>Datums- und Zeitangaben werden im entsprechenden Standard-SQL-Format übertragen</b> (sowohl in der Anfrage, als auch in der Antwort).</li>
+      <li><b>Passwörter werden der Einfachheit halber im Klartext übergeben.</b></li>
+      <li><b>Die erwähnten IDs sind RowIDs!!!</b></li>
+    </ul>
+  version: 2019.WiSe.1
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  /spiele:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt Spiele zurück.
+      description: >-
+        Alle Spiele werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, wird die Rückgabe noch entsprechend gefiltert.
+      parameters:
+        - name: name
+          in: query
+          description: 'Nur Spiele, deren **Name** `name` enthält, werden zurückgegeben.'
+          schema:
+            type: string
+        - name: fsk
+          in: query
+          description: 'Nur Spiele, die höchstens die **FSK-Angabe** `fsk` besitzen, werden zurückgegeben.'
+          schema:
+            type: integer
+        - name: top
+          in: query
+          description: 'Nur Spiele, die unter den `top` **durchschnittlich bestbewerteten Spielen** sind, werden absteigend sortiert zurückgeben.'
+          schema:
+            type: integer
+        - name: entwicklerid
+          in: query
+          description: 'Nur Spiele, die vom **Entwickler mit RowID** `entwicklerid` erstellt wurden, werden zurückgegeben.'
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                      properties:
+                        spielid:
+                          type: integer
+                          description: '**RowID des Spiels**.'
+                        name:
+                          type: string
+                          description: '**Name** des Spiels.'
+                        fsk:
+                          type: integer
+                          description: '**FSK-Angabe** des Spiels.'
+                        durchschnittsbewertung:
+                          type: number
+                          format: double
+                          description: '**Durchschnittsbewertung** des Spiels.'
+                        entwicklerid:
+                          type: integer
+                          description: '**RowID des Entwicklers** des Spiels.'
+                        produktid:
+                          type: integer
+                          description: '**RowID des Produkts** des Spiels.'
+                      required:
+                        - spielid
+                        - name
+                        - fsk
+                        - durchschnittsbewertung
+                        - entwicklerid
+                        - produktid
+    post:
+      tags:
+        - Authentifizierter und als Entwickler authorisierter Anwender
+      security:
+        - basic authentication: []
+      summary: Fügt ein Spiel hinzu.
+      description: >-
+        Ein Spiel wird mit den entsprechenden Werten hinzugefügt.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    name:
+                      type: string
+                      description: '**Name** des Spiels.'
+                    beschreibung:
+                      type: string
+                      description: '**Beschreibung** des Spiels.'
+                    bild:
+                      type: string
+                      format: binary
+                      description: '**Bild** des Spiels.'
+                    datum:
+                      type: string
+                      format: date
+                      description: '**Veröffentlichungsdatum** des Spiels.'
+                    fsk:
+                      type: integer
+                      description: '**FSK-Angabe** des Spiels.'
+                    vorgaengerid:
+                      type: integer
+                      description: '**RowID des Vorgängers** des Spiels, wenn vorhanden.'
+                    entwicklerid:
+                      type: integer
+                      description: '**RowID des Entwicklers** des Spiels.'
+                  required:
+                    - name
+                    - beschreibung
+                    - bild
+                    - datum
+                    - fsk
+                    - entwicklerid
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /spiele/{spielid}:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt ein Spiel zurück.
+      description: >-
+        Das Spiel mit RowID `spielid` wird zurückgegeben.
+      parameters:
+        - name: spielid
+          in: path
+          description: '**RowID des Spiels**.'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      spielid:
+                        type: integer
+                        description: '**RowID des Spiels**.'
+                    required:
+                      - spielid
+                  - $ref: '#/components/schemas/spiel'
+                  - type: object
+                    properties:
+                      produktid:
+                        type: integer
+                        description: '**RowID des Produkts**.'
+                    required:
+                      - produktid
+        '404':
+          $ref: '#/components/responses/404'
+  /spiele/{spielid}/zusatzinhalte:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt Zusatzinhalte eines Spiels zurück.
+      description: >-
+        Alle Zusatzinhalte des Spiels mit der RowID `spielid` werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, wird die Rückgabe noch entsprechend gefiltert.
+      parameters:
+        - name: spielid
+          in: path
+          description: '**RowID des Spiels**.'
+          schema:
+            type: integer
+          required: true
+        - name: name
+          in: query
+          description: 'Nur Zusatzinhalte, deren **Name** `name` enthält, werden zurückgegeben.'
+          schema:
+            type: string
+        - name: top
+          in: query
+          description: 'Nur Zusatzinhalte, die unter den `top` **durchschnittlich bestbewerteten Zusatzinhalten** sind, werden absteigend sortiert zurückgeben.'
+          schema:
+            type: integer
+        - name: entwicklerid
+          in: query
+          description: 'Nur Zusatzinhalte, die vom **Entwickler mit RowID** `entwicklerid` erstellt wurden, werden zurückgegeben.'
+          schema:
+            type: integer
+        - name: kategorieid
+          in: query
+          description: 'Nur Zusatzinhalte, die der **Kategorie mit RowID** `kategorieid` zugeordnet sind, werden zurückgegeben.'
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    zusatzinhaltid:
+                      type: integer
+                      description: '**RowID des Zusatzinhalts**.'
+                    name:
+                      type: string
+                      description: '**Name** des Zusatzinhalts.'
+                    kategorieid:
+                      type: integer
+                      description: '**RowID der Kategorie** des Zusatzinhalts.'
+                    durchschnittsbewertung:
+                      type: number
+                      format: double
+                      description: '**Durchschnittsbewertung** des Zusatzinhalts.'
+                    produktid:
+                      type: integer
+                      description: '**RowID des Produkts** des Zusatzinhalts.'
+                  required:
+                    - spielid
+                    - name
+                    - kategorie
+                    - durchschnittsbewertung
+                    - produktid
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Authentifizierter und als Entwickler authorisierter Anwender
+      security:
+        - basic authentication: []
+      summary: Fügt einen Zusatzinhalt zu einem Spiel hinzu.
+      description: >-
+        Ein Zusatzinhalt wird zu einem Spiel mit den entsprechenden Werten hinzugefügt.
+      parameters:
+        - name: spielid
+          in: path
+          description: '**RowID des Spiels**.'
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/zusatzinhalt'
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /zusatzinhalt/{zusatzinhaltid}:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt einen Zusatzinhalt zurück.
+      description: >-
+        Der Zusatzinhalt mit RowID `zusatzinhaltid` wird zurückgegeben.
+      parameters:
+        - name: zusatzinhaltid
+          in: path
+          description: '**RowID des Zusatzinhalts**.'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      zusatzinhaltid:
+                        type: integer
+                        description: '**RowID des Zusatzinhalts**.'
+                    required:
+                      - zusatzinhaltid
+                  - $ref: '#/components/schemas/zusatzinhalt'
+        '404':
+          $ref: '#/components/responses/404'
+  /produkte/{produktid}:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt ein Produkt zurück (per Redirect).
+      description: >-
+        Falls das Produkt mit der RowID `produktid` existiert, wird die entsprechende spezifischere URL im Location-Header angegeben.
+      parameters:
+        - name: produktid
+          in: path
+          description: '**RowID des Produkts**.'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '301':
+          $ref: '#/components/responses/301'
+        '404':
+          $ref: '#/components/responses/404'
+  /produkte/{produktid}/bewertungen:
+    post:
+      tags:
+        - Authentifizierter und als Kunde authorisierter Anwender
+      security:
+        - basic authentication: []
+      summary: Fügt eine Bewertung zu einem Produkt hinzu.
+      description: >-
+        Eine Bewertung wird zum **Produkt mit RowID** `produktid` hinzugefügt. **Ein Kunde kann nur Bewertungen zu Produkten erstellen, die er auch selbst besitzt.**
+      parameters:
+        - name: produktid
+          in: path
+          description: '**RowID des Produkts**.'
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    note:
+                      type: integer
+                      description: '**Note** der Bewertung.'
+                    text:
+                      type: string
+                      description: '**Text** der Bewertung.'
+                  required:
+                    - note
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  /kunden:
+    post:
+      tags:
+        - Anwender
+      summary: Fügt einen Kunden hinzu.
+      description: >-
+        Ein Kunde wird mit den entsprechenden Werten hinzugefügt.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/user'
+                - $ref: '#/components/schemas/kunde'
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+  /entwickler:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt Entwickler zurück.
+      description: >-
+        Alle Entwickler werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, wird die Rückgabe noch entsprechend gefiltert.
+      parameters:
+        - name: land
+          in: query
+          description: 'Nur Entwickler aus dem **Land** `land` werden zurückgegeben.'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                      properties:
+                        entwicklerid:
+                          type: integer
+                          description: '**RowID des Entwicklers**.'
+                      required:
+                        - entwicklerid
+                    - $ref: '#/components/schemas/entwickler'
+    post:
+      tags:
+        - Anwender
+      summary: Fügt einen Entwickler hinzu.
+      description: >-
+        Ein Entwickler wird mit den entsprechenden Werten hinzugefügt.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/user'
+                - $ref: '#/components/schemas/entwickler'
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+  /entwickler/{entwicklerid}:
+    get:
+      tags:
+        - Anwender
+      summary: Gibt einen Entwickler zurück.
+      description: >-
+        Der Entwickler mit RowID `entwicklerid` wird zurückgegeben.
+      parameters:
+        - name: entwicklerid
+          in: path
+          description: '**RowID des Entwicklers**.'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      entwicklerid:
+                        type: integer
+                        description: '**RowID des Entwicklers**.'
+                    required:
+                      - entwicklerid
+                  - $ref: '#/components/schemas/entwickler'
+        '404':
+          $ref: '#/components/responses/404'
+
+  /kaeufe:
+    get:
+      tags:
+        - Authentifizierter und als Kunde authorisierter Anwender
+      security:
+        - basic authentication: []
+      summary: Gibt eigene Käufe zurück.
+      description: >-
+        Alle eigenen Käufe werden zurückgegeben. Falls Query-Parameter mit Werten
+        angegeben wurden, wird die Rückgabe noch entsprechend gefiltert.
+      parameters:
+        - name: name
+          in: query
+          description: 'Nur Käufe von einem Produkt mit **Namen** `name` werden zurückgegeben.'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                      properties:
+                        kaufid:
+                          type: integer
+                          description: '**RowID des Kaufs**.'
+                        produktid:
+                          type: integer
+                          description: '**RowID des Produkts**.'
+                        name:
+                          type: string
+                          description: '**Name** des Produkts.'
+                        kundeid:
+                          type: integer
+                          description: '**RowID des Kunden**.'
+                      required:
+                        - kaufid
+                        - produktid
+                        - name
+                        - kundeid
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+        - Authentifizierter und als Kunde authorisierter Anwender
+      security:
+        - basic authentication: []
+      summary: Kauft ein Produkt.
+      description: >-
+        Das Produkt mit **ProduktID** `produktid` wird mit einem **gültigen Gutscheincode** gekauft.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    produktid:
+                      type: integer
+                      description: '**RowID** des Produkts.'
+                  required:
+                    - produktid
+                - type: object
+                  properties:
+                    gutscheincode:
+                      type: string
+                      description: '**Gutscheincode** für den Kauf.'
+                  required:
+                    - gutscheincode
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /kaeufe/{kaufid}:
+    get:
+      tags:
+        - Authentifizierter und als Kunde authorisierter Anwender
+      security:
+        - basic authentication: []
+      summary: Gibt einen eigenen Kauf zurück.
+      description: >-
+        Der Kauf mit der RowID `kaufid` wird zurückgegeben.
+      parameters:
+        - name: kaufid
+          in: path
+          description: '**RowID des Kaufs**.'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: '**OK**.'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      kaufid:
+                        type: integer
+                        description: '**RowID des Kaufs**.'
+                    required:
+                      - kaufid
+                  - $ref: '#/components/schemas/kaeufe'
+                  - type: object
+                    properties:
+                      produktid:
+                        type: integer
+                        description: '**RowID des Produkts**.'
+                      kundeid:
+                        type: integer
+                        description: '**RowID** des Kunden.'
+                    required:
+                      - produktid
+                      - kundeid
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+components:
+  securitySchemes:
+    basic authentication:
+      type: http
+      scheme: basic
+  responses:
+    '201':
+      description: '**Created**.'
+      headers:
+        Location:
+          description: Die URL der neuen Ressource.
+          schema:
+            type: string
+    '204':
+      description: '**No Content**.'
+    '301':
+      description: '**Moved Permanently**.'
+      headers:
+        Location:
+          description: Die URL der Ressource.
+          schema:
+            type: string
+    '400':
+      description: '**Bad Request**.'
+    '401':
+      description: '**Unauthorized**.'
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+    '403':
+      description: '**Forbidden**.'
+    '404':
+      description: '**Not Found**.'
+  schemas:
+    spiel:
+      type: object
+      properties:
+        name:
+          type: string
+          description: '**Name** des Spiels.'
+        beschreibung:
+          type: string
+          description: '**Beschreibung** des Spiels.'
+        bild:
+          type: string
+          format: binary
+          description: '**Bild** des Spiels.'
+        datum:
+          type: string
+          format: date
+          description: '**Veröffentlichungsdatum** des Spiels.'
+        fsk:
+          type: integer
+          description: '**FSK-Angabe** des Spiels.'
+        vorgaengerid:
+          type: integer
+          description: '**RowID des Vorgängers** des Spiels, wenn vorhanden.'
+        zusatzinhalte:
+          type: integer
+          description: '**Anzahl der Zusatzinhalte** des Spiels.'
+        entwicklerid:
+          type: integer
+          description: '**RowID des Entwicklers** des Spiels.'
+      required:
+        - name
+        - beschreibung
+        - bild
+        - datum
+        - fsk
+        - zusatzinhalte
+        - entwicklerid
+    zusatzinhalt:
+      type: object
+      properties:
+        name:
+          type: string
+          description: '**Name** des Zusatzinhalts.'
+        beschreibung:
+          type: string
+          description: '**Beschreibung** des Zusatzinhalts.'
+        bild:
+          type: string
+          format: binary
+          description: '**Bild** des Zusatzinhalts.'
+        datum:
+          type: string
+          format: date
+          description: '**Veröffentlichungsdatum** des Zusatzinhalts.'
+        entwicklerid:
+          type: integer
+          description: '**RowID des Entwicklers** des Zusatzinhalts.'
+        kategorieid:
+          type: integer
+          description: '**RowID der Kategorie** des Zusatzinhalts.'
+      required:
+        - name
+        - beschreibung
+        - bild
+        - datum
+        - entwicklerid
+        - kategorieid
+    user:
+      type: object
+      properties:
+        email:
+          type: string
+          description: '**E-Mail-Adresse** des Users.'
+        passwort:
+          type: string
+          description: '**Passwort** des Users.'
+        land:
+          type: string
+          description: '**Land** des Users.'
+      required:
+        - land
+        - email
+        - passwort
+    kunde:
+      type: object
+      properties:
+        vorname:
+          type: string
+          description: '**Vorname** des Kunden.'
+        nachname:
+          type: string
+          description: '**Nachname** des Kunden.'
+        benutzername:
+          type: string
+          description: '**Benutzername** des Kunden.'
+      required:
+        - vorname
+        - nachname
+        - benutzername
+    entwickler:
+      type: object
+      properties:
+        studioname:
+          type: string
+          description: '**Studioname** des Entwicklers.'
+        homepage:
+          type: string
+          description: '**Homepage** des Entwicklers.'
+      required:
+        - studioname
+        - homepage
+    kaeufe:
+      type: object
+      properties:
+        gutscheincode:
+          type: string
+          description: '**Gutscheincode** des Kaufs.'
+      required:
+        - gutscheincode
