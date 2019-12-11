@@ -10,10 +10,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.security.Principal;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -101,12 +99,39 @@ public class ExampleController {
         return Response.created(uriInfo.getAbsolutePathBuilder().path("234235").build()).build();
     }
 
-    @Path("products")
-    @GET // GET http://localhost:8080/productshhh
+    @Path("product")
+    @RolesAllowed({"USER"})
+    @GET // GET http://localhost:8080/product
     public List<Map<String, Object>> getProducts() throws SQLException {
+        Principal user = securityContext.getUserPrincipal();
         Connection connection = dataSource.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from Produkt;");
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery("SELECT * from Produkt");
+        List<Map<String, Object>> entities = new ArrayList<>();
+        Map<String, Object> entity;
+        while (resultSet.next()) {
+            entity = new HashMap<>();
+            entity.put("id", resultSet.getObject(1));
+            entity.put("name", resultSet.getObject(2));
+            entity.put("beschreibung", resultSet.getObject(4));
+            entity.put("datum", resultSet.getObject(5));
+            entity.put("entwickler_user_mailadresse", resultSet.getObject(6));
+            entities.add(entity);
+        }
+        resultSet.close();
+        connection.close();
+        return entities;
+    }
+
+    @Path("product/{id}")
+    @RolesAllowed({"USER"})
+    @GET // GET http://localhost:8080/product/id
+    public List<Map<String, Object>> getProduct(@PathParam("id") Integer id) throws SQLException {
+        Principal user = securityContext.getUserPrincipal();
+        Connection connection = dataSource.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from Produkt where ID = ?");
         preparedStatement.closeOnCompletion();
+        preparedStatement.setObject(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         List<Map<String, Object>> entities = new ArrayList<>();
         Map<String, Object> entity;
@@ -114,6 +139,8 @@ public class ExampleController {
             entity = new HashMap<>();
             entity.put("name", resultSet.getObject(2));
             entity.put("beschreibung", resultSet.getObject(4));
+            entity.put("datum", resultSet.getObject(5));
+            entity.put("entwickler_user_mailadresse", resultSet.getObject(6));
             entities.add(entity);
         }
         resultSet.close();

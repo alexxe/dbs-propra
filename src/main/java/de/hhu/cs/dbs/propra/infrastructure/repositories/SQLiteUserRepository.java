@@ -36,7 +36,7 @@ public class SQLiteUserRepository implements UserRepository {
 
     public long countByNameAndPassword(String name, String password) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT count(*) FROM (SELECT ?, ?);"; // TODO: Die Anzahl der Benutzer mit 'name' als E-Mail-Adresse bzw. Benutzernamen und 'password' als Passwort zurueckgeben.
+            String sql = "SELECT count(*) FROM (SELECT * FROM User where Mailadresse = ? AND Passwort = ?);"; // TODO: Die Anzahl der Benutzer mit 'name' als E-Mail-Adresse bzw. Benutzernamen und 'password' als Passwort zurueckgeben.
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, name);
