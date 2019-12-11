@@ -102,7 +102,7 @@ public class ExampleController {
     }
 
     @Path("products")
-    @GET // GET http://localhost:8080/products
+    @GET // GET http://localhost:8080/productshhh
     public List<Map<String, Object>> getProducts() throws SQLException {
         Connection connection = dataSource.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from Produkt;");
