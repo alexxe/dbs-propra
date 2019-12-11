@@ -100,4 +100,24 @@ public class ExampleController {
         }
         return Response.created(uriInfo.getAbsolutePathBuilder().path("234235").build()).build();
     }
+
+    @Path("products")
+    @GET // GET http://localhost:8080/products
+    public List<Map<String, Object>> getProducts() throws SQLException {
+        Connection connection = dataSource.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from Produkt;");
+        preparedStatement.closeOnCompletion();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<Map<String, Object>> entities = new ArrayList<>();
+        Map<String, Object> entity;
+        while (resultSet.next()) {
+            entity = new HashMap<>();
+            entity.put("name", resultSet.getObject(2));
+            entity.put("beschreibung", resultSet.getObject(4));
+            entities.add(entity);
+        }
+        resultSet.close();
+        connection.close();
+        return entities;
+    }
 }
