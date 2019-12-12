@@ -34,7 +34,7 @@ public class EntwicklerController {
     @Path("entwickler")
     @RolesAllowed({"USER"})
     @GET // GET http://localhost:8080/entwickler?land=xyz
-    public List<Map<String, Object>> getGames(@QueryParam("land") String land) throws SQLException {
+    public List<Map<String, Object>> getEntwickler(@QueryParam("land") String land) throws SQLException {
 
         Connection connection = dataSource.getConnection();
         Statement stmt = connection.createStatement();
@@ -44,8 +44,8 @@ public class EntwicklerController {
 
     @Path("entwickler/{entwicklerid}")
     @RolesAllowed({"USER"})
-    @GET // GET http://localhost:8080/spiele/spielid
-    public Map<String, Object> getGame(@PathParam("entwicklerid") Integer entwicklerid) throws SQLException {
+    @GET // GET http://localhost:8080/entwickler/entwicklerid
+    public Map<String, Object> getEntwicklerById(@PathParam("entwicklerid") String entwicklerid) throws SQLException {
         Connection connection = dataSource.getConnection();
         return null;
     }
