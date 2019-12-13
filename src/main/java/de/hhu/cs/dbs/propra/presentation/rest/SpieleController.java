@@ -1,5 +1,6 @@
 package de.hhu.cs.dbs.propra.presentation.rest;
 
+import de.hhu.cs.dbs.propra.application.exceptions.APIError;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -12,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +92,7 @@ public class SpieleController {
             connection.close();
             return entities;
         } catch (SQLException ex) {
-            throw  new BadRequestException(ex.getMessage());
+            throw new BadRequestException(ex.getMessage());
         }
     }
 
@@ -128,73 +132,87 @@ public class SpieleController {
                 return entities.get(0);
             }
         } catch (SQLException ex) {
-            throw  new BadRequestException(ex.getMessage());
+            throw new BadRequestException(ex.getMessage());
         }
         throw new NotFoundException("Resource '" + spielid + "' not found");
     }
 
 
-    @POST
-    @Path("test")
-    public Response Test(@FormDataParam("name") String name) {
-        return Response.created(UriBuilder.fromUri("http://localhost:8080/spiele/").build()).build();
-    }
-
     @Path("spiele")
     @RolesAllowed({"ADMIN"})
     @POST // POST http://localhost:8080/spiele
-    public Response CreateGame(@FormDataParam("name") String name, @FormDataParam("beschreibung") String beschreibung, @FormDataParam("bild") String bild, @FormDataParam("datum") String datum, @FormDataParam("fsk") String fsk, @FormDataParam("vorgaengerid") Integer vorgaengerid, @FormDataParam("entwicklerid") String entwicklerid) {
-        if (name == null) return Response.status(Response.Status.BAD_REQUEST).build();
-        if (beschreibung == null) return Response.status(Response.Status.BAD_REQUEST).build();
-        if (bild == null) return Response.status(Response.Status.BAD_REQUEST).build();
-        if (datum == null) return Response.status(Response.Status.BAD_REQUEST).build();
-        if (fsk == null) return Response.status(Response.Status.BAD_REQUEST).build();
-        if (entwicklerid == null) return Response.status(Response.Status.BAD_REQUEST).build();
-
+    public Response CreateGame(@FormDataParam("name") String name, @FormDataParam("beschreibung") String beschreibung, @FormDataParam("bild") String bild, @FormDataParam("datum") String datum, @FormDataParam("fsk") String fsk, @FormDataParam("vorgaengerid") Integer vorgaengerid, @FormDataParam("entwicklerid") String entwicklerid) throws SQLException {
+        if (name == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("name")).build();
+        if (beschreibung == null)
+            return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("beschreibung")).build();
+        if (bild == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bild")).build();
+        if (datum == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
+        if (fsk == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("fsk")).build();
+        if (entwicklerid == null)
+            return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("entwicklerid")).build();
         try {
-            Connection connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            // Create Produkt
-            int new_id;
-            String stringStatement = null;
-            PreparedStatement preparedStatement = null;
+            new SimpleDateFormat("yyyy-MM-dd").parse(datum);
+        } catch (ParseException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
+        }
+
+
+        Connection connection = dataSource.getConnection();
+        connection.setAutoCommit(false);
+        // Create Produkt
+        int new_id;
+        String stringStatement = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            stringStatement = "INSERT INTO Produkt(Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) values(?,?,?,?,?);";
+            preparedStatement = connection.prepareStatement(stringStatement);
+            preparedStatement.closeOnCompletion();
+            preparedStatement.setObject(1, name);
+            preparedStatement.setObject(2, bild);
+            preparedStatement.setObject(3, beschreibung);
+            preparedStatement.setObject(4, datum);
+            preparedStatement.setObject(5, securityContext.getUserPrincipal().getName());
+            preparedStatement.executeUpdate();
+            new_id = preparedStatement.getGeneratedKeys().getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            connection.rollback();
+            throw e;
+        }
+        // Create Spiel
+        try {
+            stringStatement = "INSERT INTO Spiel(Produkt_ID, FSK) values(?,?);";
+            preparedStatement = connection.prepareStatement(stringStatement);
+            preparedStatement.closeOnCompletion();
+            preparedStatement.setObject(1, new_id);
+            preparedStatement.setObject(2, fsk);
+            preparedStatement.executeUpdate();
+            new_id = preparedStatement.getGeneratedKeys().getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            connection.rollback();
+            throw e;
+        }
+        if (vorgaengerid != null) {
+            //Create Nachvolger_von
             try {
-                stringStatement = "INSERT INTO Produkt(Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) values(?,?,?,?,?);";
-                preparedStatement = connection.prepareStatement(stringStatement);
-                preparedStatement.closeOnCompletion();
-                preparedStatement.setObject(1, name);
-                preparedStatement.setObject(2, bild);
-                preparedStatement.setObject(3, beschreibung);
-                preparedStatement.setObject(4, datum);
-                preparedStatement.setObject(5, securityContext.getUserPrincipal().getName());
-                preparedStatement.executeUpdate();
-                new_id = preparedStatement.getGeneratedKeys().getInt(1);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                connection.rollback();
-                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-            }
-            // Create Spiel
-            try {
-                stringStatement = "INSERT INTO Spiel(Produkt_ID, FSK) values(?,?);";
+                stringStatement = "INSERT INTO Nachfolger_von(Spiel_Produkt_ID1, Spiel_Produkt_ID2) values(?,?);";
                 preparedStatement = connection.prepareStatement(stringStatement);
                 preparedStatement.closeOnCompletion();
                 preparedStatement.setObject(1, new_id);
-                preparedStatement.setObject(2, fsk);
+                preparedStatement.setObject(2, vorgaengerid);
                 preparedStatement.executeUpdate();
-                new_id = preparedStatement.getGeneratedKeys().getInt(1);
             } catch (SQLException e) {
                 e.printStackTrace();
                 connection.rollback();
-                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+                throw e;
             }
-            connection.commit();
-            connection.close();
-            return Response.created(UriBuilder.fromUri("http://localhost:8080/spiele/"+new_id).build()).build();
 
-
-        } catch (SQLException ex) {
-            throw  new BadRequestException(ex.getMessage());
         }
+        connection.commit();
+        connection.close();
+        return Response.created(UriBuilder.fromUri("http://localhost:8080/spiele/" + new_id).build()).build();
+
+
     }
 }
