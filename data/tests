@@ -1,0 +1,10 @@
+ //POST http://localhost:8080/spiele
+
+ curl -v -u tonystark@stark.com:Passwort
+ -F 'name=nnn'
+ -F 'beschreibung=nnn'
+ -F 'bild=nnn'
+ -F 'datum=2016-12-10'
+ -F 'fsk=18'
+ -F 'entwicklerid=tonystark@stark.com'
+ -X POST http://localhost:8080/spiele
