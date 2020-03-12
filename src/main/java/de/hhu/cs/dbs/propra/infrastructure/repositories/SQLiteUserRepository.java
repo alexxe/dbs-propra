@@ -22,7 +22,7 @@ public class SQLiteUserRepository implements UserRepository {
     public Optional<User> findByName(String name) {
         Optional<User> user = Optional.empty();
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT ?, 'USER' UNION SELECT ?, 'EMPLOYEE' FROM Kunde WHERE User_Mailadresse = ?  UNION SELECT ?, 'ADMIN' FROM Entwickler WHERE User_Mailadresse = ? ;";
+            String sql = "SELECT ?, 'USER' UNION SELECT ?, 'BESUCHER' FROM Besucher WHERE User_Mailadresse = ?  UNION SELECT ?, 'KUENSTLER' FROM Kuenstler WHERE User_Mailadresse = ? UNION SELECT ? , 'VERANSTALTER' FROM Veranstalter WHERE User_Mailadresse = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, name);
@@ -30,6 +30,8 @@ public class SQLiteUserRepository implements UserRepository {
             preparedStatement.setObject(3, name);
             preparedStatement.setObject(4, name);
             preparedStatement.setObject(5, name);
+            preparedStatement.setObject(6, name);
+            preparedStatement.setObject(7, name);
             ResultSet resultSet = preparedStatement.executeQuery();
             user = Optional.ofNullable(extractUser(resultSet));
         } catch (SQLException e) {

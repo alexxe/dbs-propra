@@ -1,100 +1,122 @@
-/*BEFUELLUNG der DB mit Beispieleintraegen:*/
-/*Relationen sollten stimmen, wenn ID immer ab 1 gezaehlt wird.*/
+/*BEFUELLUNG DER DB mit BEISPIELEINTRAEGEN
+  Relationen sollten stimmen, wenn ID immer ab 1 gezaehlt wird.*/
 
-/*Daten in Tabelle User einfuegen*/
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('alfredausgedacht@freenet.nl', 'Niederlande', 'alfredo');
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('borisbeispiel@aol.de', 'Deutschland', 'passwortboris');
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('maxmustermann@web.de', 'Deutschland', 'pwmustermann');
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('johndoe@gmx.de', 'USA', 'passwortjohn');
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('hans@gmail.com', 'Schweiz', 'Passwort1');
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('tonystark@stark.com', 'USA', 'Passwort');
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('steverogers@avengers.com', 'USA', 'captain1234');
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('brucebanner@hulk.com', 'USA', 'bruceistcool');
-INSERT INTO User (Mailadresse, Land, Passwort) VALUES ('clintbarton@hawkeye.com', 'USA', 'passhawk');
+--Daten in Tabelle ORT eintragen
+INSERT INTO Ort (Bezeichnung, Land) VALUES ('Dortmund','Deutschland');
+INSERT INTO Ort (Bezeichnung, Land) VALUES ('Graefenhainichen','Deutschland');
+INSERT INTO Ort (Bezeichnung, Land) VALUES ('Nuerburg','Deutschland');
+INSERT INTO Ort (Bezeichnung, Land) VALUES ('Indio','USA');
 
-/*Daten in Tabelle Entwickler einfuegen*/
-INSERT INTO Entwickler (User_Mailadresse, Homepage, Studioname) VALUES ('tonystark@stark.com', 'http://stark-industries.com', 'StarkIndustries');
-INSERT INTO Entwickler (User_Mailadresse, Homepage, Studioname) VALUES ('steverogers@avengers.com', 'http://captainamaerica.com', 'CA-Productions');
-INSERT INTO Entwickler (User_Mailadresse, Homepage, Studioname) VALUES ('brucebanner@hulk.com', 'http://hulk.org', 'ScienceRocks GmbH');
-INSERT INTO Entwickler (User_Mailadresse, Homepage, Studioname) VALUES ('clintbarton@hawkeye.com', 'http://hawkeye.com', 'Hawkeye Corporation');
+--Daten in Tabelle GENRE eintragen
+INSERT INTO Genre (Name) VALUES ('Rock');
+INSERT INTO Genre (Name) VALUES ('Punkrock');
+INSERT INTO Genre (Name) VALUES ('Pop');
+INSERT INTO Genre (Name) VALUES ('Hiphop');
+INSERT INTO Genre (Name) VALUES ('Blues');
+INSERT INTO Genre (Name) VALUES ('Electropop');
 
-/*Daten in Tabelle Kunde einfuegen*/
-INSERT INTO Kunde (User_Mailadresse, Benutzername, Vorname, Nachname) VALUES ('alfredausgedacht@freenet.nl', 'Alfred12', 'Alfred', 'Ausgedacht');
-INSERT INTO Kunde (User_Mailadresse, Benutzername, Vorname, Nachname) VALUES ('borisbeispiel@aol.de', 'Boris00', 'Boris', 'Beispiel');
-INSERT INTO Kunde (User_Mailadresse, Benutzername, Vorname, Nachname) VALUES ('maxmustermann@web.de', 'Maxiking', 'Max', 'Mustermann');
-INSERT INTO Kunde (User_Mailadresse, Benutzername, Vorname, Nachname) VALUES ('johndoe@gmx.de', 'Johnniboy', 'John', 'Doe');
-INSERT INTO Kunde (User_Mailadresse, Benutzername, Vorname, Nachname) VALUES ('hans@gmail.com', 'Hanzz', 'Hans', 'Wurst');
+--Daten in Tabelle FESTIVAL eintragen
+INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_Bezeichnung) VALUES ('Splash', readfile('bild.png'), '2020-07-10', 'Graefenhainichen');
+INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_Bezeichnung) VALUES ('Juicy Beats', readfile('bild.png'), '2020-07-24', 'Dortmund');
+INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_Bezeichnung) VALUES ('Rock am Ring', readfile('bild.png'), '2019-06-05', 'Nuerburg');
+INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_Bezeichnung) VALUES ('Coachella', readfile('bild.png'), '2019-04-10', 'Indio');
 
-/*Daten in Tabelle Produkt einfuegen*/
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Shoot', readfile('bild.png'), 'Ego-Shooter mit atemberaubender Grafik', '2018-02-12', 'tonystark@stark.com');
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Tower Defense', readfile('bild.png'), 'Simples Strategiespiel', '2017-07-01', 'clintbarton@hawkeye.com');
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Tower Defense Part 2', readfile('bild.png'), 'Teil 2 des erfolgreichen Strategiespiels mit mehr Gewalt', '2019-07-01', 'clintbarton@hawkeye.com');
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Ball Kicker 2018', readfile('bild.png'), 'Das Sportspiel fuer die ganze Familie', '2018-01-01', 'steverogers@avengers.com');
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Questionmaster', readfile('bild.png'), 'Raetselspiel fuer Jung und Alt', '2016-12-10', 'brucebanner@hulk.com');
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Ball Kicker 2019', readfile('bild.png'), 'Das neue Sportspiel fuer die ganze Familie', '2019-01-01', 'steverogers@avengers.com');
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Nebenquest-Addon', readfile('bild.png'), 'Die lang erwarteten Nebenquests', '2018-04-03', 'tonystark@stark.com');
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Skinpack1', readfile('bild.png'), 'Mehrere Skins', '2019-05-02', 'steverogers@avengers.com');
-INSERT INTO Produkt (Name, Bild, Beschreibung, Datum, Entwickler_User_Mailadresse) VALUES ('Soundtrack Gefahr', readfile('bild.png'), 'Gefaehrliche Situationen werden ab sofort noch gruseliger', '2019-03-05', 'tonystark@stark.com');
+--Daten in Tabelle BUEHNE eintragen
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Backyard', 50, 400, 1);
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Playground', 40, 350, 1);
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Snipes Mainstage', 20, 900, 1);
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Juicy Stage', 90, 2000, 2);
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Konzerthaus Stage', 15, 400, 2);
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Buehne', 300, 5000, 3);
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Plattform', 100, 1200, 3);
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Sonora', 400, 10000, 4);
+INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Sahara', 500, 8000,4);
 
-/*Daten in Tabelle Spiel einfuegen*/
-INSERT INTO Spiel (Produkt_ID, FSK) VALUES (1, 18);
-INSERT INTO Spiel (Produkt_ID, FSK) VALUES (2, 12);
-INSERT INTO Spiel (Produkt_ID, FSK) VALUES (3, 16);
-INSERT INTO Spiel (Produkt_ID, FSK) VALUES (4, 0);
-INSERT INTO Spiel (Produkt_ID, FSK) VALUES (5, 6);
-INSERT INTO Spiel (Produkt_ID, FSK) VALUES (6, 0);
+--Daten in Tabelle USER eintragen
+--davon Kuenstler
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('mickjagger@roll.com', 'CBH6clint', 'Michael', 'Jagger');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('keithrichards@roll.com', 'Richyk1', 'Keith', 'Richards');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('kopplins@sdp.de', 'Pass4steve', 'Dag', 'Kopplin');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('koljah@ag.de', 'Kennwort2hulk', 'Kolja', 'Podkowik');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('pittner@deichkind.de', 'Tony7pw', 'Malte', 'Pittner');
+--davon Besucher
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('maxmustermann@web.de', '0pwMustermann', 'Max', 'Mustermann');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('johndoe@gmx.de', 'J0hnnyboy', 'John', 'Doe');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('berndbeispiel@aol.de', 'Passwbernd1', 'Bernd', 'Beispiel');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('hans@gmail.com', 'Hans3n', 'Hans', 'Wurst');
+--davon Veranstalter
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('alfredausgedacht@freenet.nl', 'Alfred0', 'Alfred', 'Ausgedacht');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('musterfraumel@mail.de', 'Abcdef123', 'Melanie', 'Musterfrau');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('thomas@chbr.com', 'Triplet3', 'Thomas', 'Tollpatsch');
+INSERT INTO User (Mailadresse, Passwort, Vorname, Nachname) VALUES ('booking@bohlen.de', 'Diedah4', 'Dieter', 'Bohlen');
 
-/*Daten in Tabelle Nachfolger_von einfuegen*/
-INSERT INTO Nachfolger_von (Spiel_Produkt_ID1, Spiel_Produkt_ID2) VALUES (3, 2);
-INSERT INTO Nachfolger_von (Spiel_Produkt_ID1, Spiel_Produkt_ID2) VALUES (6, 4);
+--Daten in Tabelle KUENSTLER eintragen
+INSERT INTO Kuenstler (User_Mailadresse,Kuenstlername) VALUES ('mickjagger@roll.com', 'Mick Jagger');
+INSERT INTO Kuenstler (User_Mailadresse) VALUES ('keithrichards@roll.com');
+INSERT INTO Kuenstler (User_Mailadresse) VALUES ('kopplins@sdp.de');
+INSERT INTO Kuenstler (User_Mailadresse, Kuenstlername) VALUES ('koljah@ag.de', 'Koljah');
+INSERT INTO Kuenstler (User_Mailadresse) VALUES ('pittner@deichkind.de');
 
-/*Daten in Tabelle Kategorie einfuegen*/
-INSERT INTO Kategorie (Kategorietitel) VALUES ('Addon');
-INSERT INTO Kategorie (Kategorietitel) VALUES ('Skinpack');
-INSERT INTO Kategorie (Kategorietitel) VALUES ('Soundtrack');
+--Daten in Tabelle BESUCHER eintragen
+INSERT INTO Besucher (User_Mailadresse,Geburtsdatum, Telefonnummer) VALUES ('berndbeispiel@aol.de', '1995-04-07','+4915134497618');
+INSERT INTO Besucher (User_Mailadresse,Geburtsdatum) VALUES ('maxmustermann@web.de', '1984-03-16');
+INSERT INTO Besucher (User_Mailadresse,Geburtsdatum) VALUES ('johndoe@gmx.de', '1993-10-29');
+INSERT INTO Besucher (User_Mailadresse,Geburtsdatum, Telefonnummer) VALUES ('hans@gmail.com', '1983-02-09', '+491733569531');
 
-/*Daten in Tabelle Zusatzinhalt einfuegen*/
-INSERT INTO Zusatzinhalt (Produkt_ID, Bezeichnung, Kategorie_ID, Spiel_Produkt_ID) VALUES (7, 'Nebenquests', 1, 1);
-INSERT INTO Zusatzinhalt (Produkt_ID, Bezeichnung, Kategorie_ID, Spiel_Produkt_ID) VALUES (8, 'Neue Skins', 2, 6);
-INSERT INTO Zusatzinhalt (Produkt_ID, Bezeichnung, Kategorie_ID, Spiel_Produkt_ID) VALUES (9, 'Gruseliger Soundtrack fuer Gefahrensitutationen im Game', 3, 1);
+--Daten in Tabelle VERANSTALTER eintragen
+INSERT INTO Veranstalter (User_Mailadresse, Name) VALUES ('alfredausgedacht@freenet.nl', 'Aus-Music');
+INSERT INTO Veranstalter (User_Mailadresse, Name) VALUES ('musterfraumel@mail.de', 'Delight');
+INSERT INTO Veranstalter (User_Mailadresse, Name) VALUES ('thomas@chbr.com', 'Chartbreaker');
+INSERT INTO Veranstalter (User_Mailadresse, Name) VALUES ('booking@bohlen.de', 'Bohlenholen');
 
-/*Daten in Tabelle Wunschliste einfuegen*/
-INSERT INTO Wunschliste (Titel, Kunde_User_Mailadresse) VALUES ('Christmas', 'hans@gmail.com');
-INSERT INTO Wunschliste (Titel, Kunde_User_Mailadresse) VALUES ('Weihnachten', 'johndoe@gmx.de');
-INSERT INTO Wunschliste (Titel, Kunde_User_Mailadresse) VALUES ('Ostern', 'maxmustermann@web.de');
-INSERT INTO Wunschliste (Titel, Kunde_User_Mailadresse) VALUES ('interessant', 'hans@gmail.com');
-INSERT INTO Wunschliste (Titel, Kunde_User_Mailadresse) VALUES ('Sportspiele', 'hans@gmail.com');
+--Daten in Tabelle TICKET eintragen
+INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('249.95', true, 1, 'johndoe@gmx.de');
+INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('190.20', true, 2, 'johndoe@gmx.de');
+INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('90.20', false, 2, 'maxmustermann@web.de');
+INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('90.20', false, 2, 'hans@gmail.com');
+INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('52.00', false, 3, 'hans@gmail.com');
+INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('312.30', false, 4, 'hans@gmail.com');
 
-/*Daten in Tabelle befreundet_mit einfuegen*/
-INSERT INTO befreundet_mit (Kunde_User_Mailadresse1, Kunde_User_Mailadresse2) VALUES ('borisbeispiel@aol.de', 'alfredausgedacht@freenet.nl');
-/*INSERT INTO befreundet_mit (Kunde_User_Mailadresse1, Kunde_User_Mailadresse2) VALUES ('alfredausgedacht@freenet.nl', 'borisbeispiel@aol.de');*/
-INSERT INTO befreundet_mit (Kunde_User_Mailadresse1, Kunde_User_Mailadresse2) VALUES ('maxmustermann@web.de', 'hans@gmail.com');
-/*INSERT INTO befreundet_mit (Kunde_User_Mailadresse1, Kunde_User_Mailadresse2) VALUES ('hans@gmail.com', 'maxmustermann@web.de');*/
-INSERT INTO befreundet_mit (Kunde_User_Mailadresse1, Kunde_User_Mailadresse2) VALUES ('maxmustermann@web.de', 'borisbeispiel@aol.de');
-/*INSERT INTO befreundet_mit (Kunde_User_Mailadresse1, Kunde_User_Mailadresse2) VALUES ('borisbeispiel@aol.de', 'maxmustermann@web.de');*/
+--Daten in Tabelle BAND eintragen
+INSERT INTO Band (Name, Gruendungsjahr) VALUES ('Rolling Stones', 1962);
+INSERT INTO Band (Name, Gruendungsjahr) VALUES ('SDP', 1999);
+INSERT INTO Band (Name, Gruendungsjahr) VALUES ('Deichkind', 1997);
+INSERT INTO Band (Name, Gruendungsjahr) VALUES ('Antilopengang', 2009);
 
-/*Daten in Tabelle besitzt einfuegen*/
-INSERT INTO besitzt (Kunde_User_Mailadresse, Produkt_ID, Gutscheincode) VALUES ('borisbeispiel@aol.de', 2, 'Gutschein1');
-INSERT INTO besitzt (Kunde_User_Mailadresse, Produkt_ID, Gutscheincode) VALUES ('borisbeispiel@aol.de', 3, 'Gutschein2');
-INSERT INTO besitzt (Kunde_User_Mailadresse, Produkt_ID, Gutscheincode) VALUES ('alfredausgedacht@freenet.nl', 1, 'Gutschein3');
-INSERT INTO besitzt (Kunde_User_Mailadresse, Produkt_ID, Gutscheincode) VALUES ('johndoe@gmx.de', 2, 'Gutschein4');
+--Daten in Tabelle PROGRAMMPUNKT eintragen
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('15:00:00', 90, 'Buehne', 1);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('18:15:00', 15, 'Plattform', 1);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('20:00:00', 120, 'Sahara', 1);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('17:15:00', 60, 'Juicy Stage', 2);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('18:45:00', 45, 'Juicy Stage', 3);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('17:20:00', 75, 'Konzerthaus Stage', 4);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('19:00:00', 30, 'Plattform', 2);
 
-/*Daten in Tabelle bewertet einfuegen*/
-INSERT INTO bewertet (Kunde_User_Mailadresse, Produkt_ID, Schulnote, Bewertungstext) VALUES ('borisbeispiel@aol.de', 2, 1, 'Richtig gut gemacht.');
-INSERT INTO bewertet (Kunde_User_Mailadresse, Produkt_ID, Schulnote, Bewertungstext) VALUES ('borisbeispiel@aol.de', 3, 4, 'Kommt leider nicht an seinen Vorgaenger ran.');
-INSERT INTO bewertet (Kunde_User_Mailadresse, Produkt_ID, Schulnote) VALUES ('alfredausgedacht@freenet.nl', 1, 2);
+--Daten in Tabelle HAT eintragen
+INSERT INTO hat (Band_ID, Kuenstler_User_Mailadresse) VALUES (1, 'mickjagger@roll.com');
+INSERT INTO hat (Band_ID, Kuenstler_User_Mailadresse) VALUES (1, 'keithrichards@roll.com');
+INSERT INTO hat (Band_ID, Kuenstler_User_Mailadresse) VALUES (2, 'kopplins@sdp.de');
+INSERT INTO hat (Band_ID, Kuenstler_User_Mailadresse) VALUES (3, 'pittner@deichkind.de');
+INSERT INTO hat (Band_ID, Kuenstler_User_Mailadresse) VALUES (4, 'koljah@ag.de');
 
-/*Daten in Tabelle enthaelt einfuegen*/
-INSERT INTO enthaelt (Wunschliste_ID, Produkt_ID) VALUES (1, 5);
-INSERT INTO enthaelt (Wunschliste_ID, Produkt_ID) VALUES (2, 6);
-INSERT INTO enthaelt (Wunschliste_ID, Produkt_ID) VALUES (3, 1);
-INSERT INTO enthaelt (Wunschliste_ID, Produkt_ID) VALUES (4, 2);
-INSERT INTO enthaelt (Wunschliste_ID, Produkt_ID) VALUES (4, 3);
-INSERT INTO enthaelt (Wunschliste_ID, Produkt_ID) VALUES (5, 4);
-INSERT INTO enthaelt (Wunschliste_ID, Produkt_ID) VALUES (5, 6);
+--Daten in Tabelle GEHOERT_ZU eintragen
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Rock', 1);
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Blues', 1);
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Pop', 2);
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Hiphop', 2);
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Rock', 2);
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Hiphop', 3);
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Electropop', 3);
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Hiphop', 4);
+INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Punkrock', 4);
 
+--Daten in Tabelle ORGANISIERT eintragen
+INSERT INTO organisiert (Veranstalter_User_Mailadresse, Festival_ID) VALUES ('alfredausgedacht@freenet.nl', 1);
+INSERT INTO organisiert (Veranstalter_User_Mailadresse, Festival_ID) VALUES ('musterfraumel@mail.de', 2);
+INSERT INTO organisiert (Veranstalter_User_Mailadresse, Festival_ID) VALUES ('thomas@chbr.com', 3);
+INSERT INTO organisiert (Veranstalter_User_Mailadresse, Festival_ID) VALUES ('thomas@chbr.com', 4);
 
-/*TESTEN, OB TRIGGER UND CO GREIFEN
-INSERT INTO befreundet_mit (Kunde_User_Mailadresse1, Kunde_User_Mailadresse2) VALUES ('borisbeispiel@aol.de', 'borisbeispiel@aol.de');
-INSERT INTO Wunschliste (Titel, Kunde_User_Mailadresse) VALUES ('Kaufen', 'hans@gmail.com');
- */
+--Daten in Tabelle KOOPERIERT eintragen
+INSERT INTO kooperiert (Veranstalter_User_Mailadresse1, Veranstalter_User_Mailadresse2) VALUES ('musterfraumel@mail.de', 'thomas@chbr.com');
+INSERT INTO kooperiert (Veranstalter_User_Mailadresse1, Veranstalter_User_Mailadresse2) VALUES ('booking@bohlen.de', 'thomas@chbr.com');
+

@@ -1,29 +1,19 @@
-# DBS Programmierpraktikum - Phase 4 - Template
+= Kritische Entscheidungen
 
-## Anleitung
+Benutzte Version: *SQLite version 3.30.1*
 
-Dies ist das auf Jersey beruhende Template für die API.
+. *Fremdschluessel:*
+.. auf COLLATE NOCASE verzichtet, weil es ja schon in der Ursprungstabelle aufgefuehrt ist.
+.. Aus der Formulierung "FOREIGN KEY (...) REFERENCES ...(...)" wurde nur "REFERENCES", da laut Christians Mail die beiden Operatoren synonym sind.
+.. Alle Fremdschluessel wurden entgegen der rm_min.pdf nochmal umbenannt, weil IntelliJ mit dem Punkt nicht klarkam. Jetzt Underscore statt Punkt. Nils meinte in der Sprechstunde, dass so etwas nicht nochmal im RM umbenannt werden muss.
 
-### Vorbereitung
+. *Suchanfragen:*
+.. Generell habe ich immer die Mailadresse und einen (Kuenstler-)Namen ausgegeben.
+.. Anfrage 2: Falls es irgendwann zwei Besucher in der DB geben sollte, die denselben Betrag fuer Tickets ausgegeben haben, dann werden auf diese Weise auch beide gelistet. Aus diesem Grund wurde hier seqnum verwendet.
 
-In der IDE muss dieses Template als Gradle-Projekt importiert werden.
-
-### Allgemein
-
-Die Mainklasse ist ```de.hhu.cs.dbs.propra.Application```. Nachdem das Programm gestartet wurde, kann mit cURL der Server getestet werden.
-
-Die Datenbank muss in ```data``` liegen und den Namen ```database.db``` besitzen.
-
-Änderungen müssen hauptsächlich nur im Package ```de.hhu.cs.dbs.propra.presentation.rest``` vorgenommen werden. Dies umfasst auch das Anlegen von Controllern. Die darin enthaltene Klasse ```ExampleController``` dient als Beispiel dafür und muss für die Abgabe gelöscht werden. Zusätzlich müssen in der Klasse ```de.hhu.cs.dbs.propra.infrastructure.repositories.SQLiteUserRepository``` die mit ```TODO``` kommentierten SQL-Anweisungen entsprechend angepasst werden, um eine korrekte Authentifizierung und Authorisierung zu ermöglichen.
-
-### Nützliche Links
-
-- http://jdk.java.net[OpenJDK], https://adoptopenjdk.net[AdoptOpenJDK]
-- https://gradle.org[Gradle]
-- https://www.docker.com[Docker]
-- https://eclipse-ee4j.github.io/jersey/[Jersey]
-- https://curl.haxx.se[cURL]
-
-## Kritische Entscheidungen
-
-...
+. *Sonstiges:*
+.. Aufgrund der Namensbindung kann ein Besucher nur ein Festival-Ticket besitzen. Die Verwendung von UNIQUE anstelle eines Triggers wurde in der Sprechstunde am letzten Freitag vorgeschlagen.
+.. Da Veranstalter nicht mit sich selbst kooperieren koennen, ist in Zeile 206 der folgende Check verwendet worden:
+----
+CHECK (Veranstalter_User_Mailadresse1 != Veranstalter_User_Mailadresse2)
+----
