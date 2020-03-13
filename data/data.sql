@@ -84,13 +84,13 @@ INSERT INTO Band (Name, Gruendungsjahr) VALUES ('Deichkind', 1997);
 INSERT INTO Band (Name, Gruendungsjahr) VALUES ('Antilopengang', 2009);
 
 --Daten in Tabelle PROGRAMMPUNKT eintragen
-INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('15:00:00', 90, 'Buehne', 1);
-INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('18:15:00', 15, 'Plattform', 1);
-INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('20:00:00', 120, 'Sahara', 1);
-INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('17:15:00', 60, 'Juicy Stage', 2);
-INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('18:45:00', 45, 'Juicy Stage', 3);
-INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('17:20:00', 75, 'Konzerthaus Stage', 4);
-INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_Bezeichnung, Band_ID) VALUES ('19:00:00', 30, 'Plattform', 2);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_ID, Band_ID) VALUES ('15:00:00', 90, 6, 1);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_ID, Band_ID) VALUES ('18:15:00', 15, 7, 1);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_ID, Band_ID) VALUES ('20:00:00', 120, 9, 1);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_ID, Band_ID) VALUES ('17:15:00', 60, 4, 2);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_ID, Band_ID) VALUES ('18:45:00', 45, 4, 3);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_ID, Band_ID) VALUES ('17:20:00', 75, 5, 4);
+INSERT INTO Programmpunkt (Uhrzeit, Dauer, Buehne_ID, Band_ID) VALUES ('19:00:00', 30, 7, 2);
 
 --Daten in Tabelle HAT eintragen
 INSERT INTO hat (Band_ID, Kuenstler_User_Mailadresse) VALUES (1, 'mickjagger@roll.com');

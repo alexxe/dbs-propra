@@ -43,8 +43,9 @@ CREATE TABLE Festival (
 );
 
 CREATE TABLE Buehne (
+    ID              INTEGER NOT NULL
+                            PRIMARY KEY,
     Bezeichnung         VARCHAR NOT NULL
-                                PRIMARY KEY
                                 COLLATE NOCASE
                                 CHECK   (length(Bezeichnung) > 0 AND
                                         Bezeichnung NOT GLOB '*[^ -~]*'),
@@ -155,8 +156,8 @@ CREATE TABLE Programmpunkt (
                                 CHECK (Uhrzeit is time(Uhrzeit)),
     Dauer               INTEGER NOT NULL
                                 CHECK  (Dauer in (15, 30, 45, 60, 75, 90, 120)),
-    Buehne_Bezeichnung  VARCHAR NOT NULL
-                                REFERENCES Buehne(Bezeichnung)
+    Buehne_ID  VARCHAR NOT NULL
+                                REFERENCES Buehne(ID)
                                 ON UPDATE CASCADE
                                 ON DELETE CASCADE,
     Band_ID             INTEGER NOT NULL
