@@ -156,7 +156,7 @@ CREATE TABLE Programmpunkt (
                                 CHECK (Uhrzeit is time(Uhrzeit)),
     Dauer               INTEGER NOT NULL
                                 CHECK  (Dauer in (15, 30, 45, 60, 75, 90, 120)),
-    Buehne_ID  VARCHAR NOT NULL
+    Buehne_ID           INTEGER NOT NULL
                                 REFERENCES Buehne(ID)
                                 ON UPDATE CASCADE
                                 ON DELETE CASCADE,

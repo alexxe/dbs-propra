@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.sql.*;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -123,8 +125,107 @@ public class FestivalsController {
             }
             resultSet.close();
             connection.close();
-            if (entities.size() == 0) {
-                throw new NotFoundException("Resource '" + festivalid + "' not found");
+            if (bezeichnung == null && sitzplaetze == null && entities.size() == 0) {
+                throw new NotFoundException("Resource festivalid '" + festivalid + "' not found");
+            }
+            return entities;
+        } catch (SQLException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
+
+    }
+
+    @Path("bands")
+    @RolesAllowed({"USER"})
+    @GET // GET http://localhost:8080/bands?
+    public List<Map<String, Object>> getBands(@QueryParam("name") String name, @QueryParam("genre") String genre, @QueryParam("gruendungsjahr") Integer gruendungsjahr) throws SQLException {
+        try {
+            Connection connection = dataSource.getConnection();
+            String where = "";
+            if (name != null) {
+                where = where + " B.Name  LIKE '%" + name + "%' ";
+            }
+            if (genre != null) {
+                if (where.length() > 0) {
+                    where = where + " AND ";
+                }
+                where = where + " GZ.Genre_Name  = '" + genre + "' ";
+            }
+            if (gruendungsjahr != null) {
+                if (where.length() > 0) {
+                    where = where + " AND ";
+                }
+                where = where + " B.Gruendungsjahr  >= " + gruendungsjahr + " ";
+            }
+
+            if (where.length() > 0) {
+                where = " WHERE " + where;
+            }
+
+            String orderBy = " ORDER BY F.datum ";
+
+            String query = "SELECT DISTINCT B.ID, B.Name , B.Gruendungsjahr " +
+                    "FROM Band B  INNER JOIN gehoert_zu GZ ON GZ.Band_ID = B.ID " + where;
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+
+            List<Map<String, Object>> entities = new ArrayList<>();
+            Map<String, Object> entity;
+            while (resultSet.next()) {
+                entity = new HashMap<>();
+                entity.put("bandid", resultSet.getObject(1));
+                entity.put("name", resultSet.getObject(2));
+                entity.put("gruendungsjahr", resultSet.getObject(3));
+
+                entities.add(entity);
+            }
+            resultSet.close();
+            connection.close();
+
+            return entities;
+        } catch (SQLException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
+
+    }
+
+    @Path("festivals/{festivalid}/buehnen/{buehneid}/programmpunkte")
+    @RolesAllowed({"USER"})
+    @GET // GET http://localhost:8080/festivals/{festivalid}/buehnen/{buehneid}/programmpunkte
+    public Object getProgrammpunkte(@PathParam("festivalid") Integer festivalid, @PathParam("buehneid") Integer buehneid, @QueryParam("bandname") String bandname, @QueryParam("dauer") Integer dauer) throws SQLException {
+        if (festivalid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("festivalid")).build();
+        if (buehneid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("buehneid")).build();
+        try {
+            Connection connection = dataSource.getConnection();
+            String where = " WHERE  B.Festival_ID =" + festivalid + " AND P.Buehne_ID = " + buehneid + " ";
+            if (bandname != null) {
+                where = where + " AND BN.Name = '" + bandname + "' ";
+            }
+            if (dauer != null) {
+                where = where + " AND P.Dauer  >= " + dauer;
+            }
+
+            String query = "SELECT F.Datum, P.Uhrzeit, P.Dauer " +
+                    "FROM Programmpunkt P INNER JOIN  Buehne B on P.Buehne_ID = B.ID INNER JOIN  Band BN on P.Band_ID = BN.ID INNER JOIN  Festival F on F.ID = B.Festival_ID " + where;
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+
+            List<Map<String, Object>> entities = new ArrayList<>();
+            Map<String, Object> entity;
+            while (resultSet.next()) {
+                entity = new HashMap<>();
+
+
+                LocalDateTime dt = LocalDateTime.of(LocalDate.parse(resultSet.getObject(1).toString()), LocalTime.parse(resultSet.getObject(2).toString()));
+                ZonedDateTime zdt = ZonedDateTime.of(dt, ZoneId.of("UTC"));
+                entity.put("startzeitpunkt", zdt.format(DateTimeFormatter.ISO_INSTANT));
+                entity.put("dauer", resultSet.getObject(3));
+                entities.add(entity);
+            }
+            resultSet.close();
+            connection.close();
+            if (bandname == null && dauer == null && entities.size() == 0) {
+                throw new NotFoundException("Resource festivalid '" + festivalid + "' buehneid '" + buehneid + " not found");
             }
             return entities;
         } catch (SQLException ex) {
