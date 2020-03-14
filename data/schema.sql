@@ -124,8 +124,8 @@ CREATE TABLE Ticket (
     Preis                       DOUBLE  NOT NULL
                                         CHECK(Preis >= 0 AND (Preis GLOB '*.[0-9][0-9]' OR Preis GLOB '*.[0-90-9]' )),
     Datum                       DATE    NOT NULL
-                                        DEFAULT (date('now'))
-                                        CHECK (Datum IS date('now') AND Datum = strftime('%Y-%m-%d') AND date(Datum) IS Datum),
+                                        DEFAULT (datetime('now')),
+                                        --CHECK (Datum IS datetime('now') AND Datum = strftime('%Y-%m-%d') AND datetime(Datum) IS Datum),
     VIP_Vermerk                 BOOLEAN NOT NULL
                                         CHECK (VIP_Vermerk in (true, false)),
     Festival_ID                 INTEGER NOT NULL
