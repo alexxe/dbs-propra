@@ -83,7 +83,6 @@ public class AnwenderController {
     }
 
     @Path("veranstalter/{veranstalterid}")
-    //@RolesAllowed({"USER"})
     @GET // GET http://localhost:8080/veranstalter/123
     public Response getVeranstalterById(@PathParam("veranstalterid") String veranstalterid) throws SQLException {
         if (veranstalterid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("veranstalterid")).build();
@@ -117,7 +116,7 @@ public class AnwenderController {
 
     }
 
-    @Path("/kuenstler")
+    @Path("kuenstler")
     @POST // POST http://localhost:8080//kuenstler
     public Response CreateKuenstler(@FormDataParam("email") String email, @FormDataParam("passwort") String passwort, @FormDataParam("vorname") String vorname, @FormDataParam("nachname") String nachname, @FormDataParam("kuenstlername") String kuenstlername) throws SQLException {
         if (email == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("email")).build();
@@ -169,7 +168,6 @@ public class AnwenderController {
     }
 
     @Path("kuenstler/{kuenstlerid}")
-    //@RolesAllowed({"USER"})
     @GET // GET http://localhost:8080/kuenstler/123
     public Response getKuenstlerById(@PathParam("kuenstlerid") String kuenstlerid) throws SQLException {
         if (kuenstlerid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("kuenstlerid")).build();
@@ -203,7 +201,7 @@ public class AnwenderController {
 
     }
 
-    @Path("//besucher")
+    @Path("besucher")
     @POST // POST http://localhost:8080///besucher
     public Response CreateBesucher(@FormDataParam("email") String email, @FormDataParam("passwort") String passwort, @FormDataParam("vorname") String vorname, @FormDataParam("nachname") String nachname, @FormDataParam("geburtsdatum") String geburtsdatum, @FormDataParam("telefonnummer") String telefonnummer) throws SQLException {
         if (email == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("email")).build();
@@ -260,7 +258,6 @@ public class AnwenderController {
     }
 
     @Path("besucher/{besucherid}")
-    //@RolesAllowed({"USER"})
     @GET // GET http://localhost:8080/kuenstler/123
     public Response getBesucherById(@PathParam("besucherid") String besucherid) throws SQLException {
         if (besucherid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("besucherid")).build();

@@ -92,7 +92,7 @@ public class BesucherController {
 
     }
 
-    @Path("///festivals/{festivalid}/tickets")
+    @Path("festivals/{festivalid}/tickets")
     @RolesAllowed({"BESUCHER"})
     @POST // POST http://localhost:8080////festivals/{festivalid}/tickets
     public Response CreateTicket(@PathParam("festivalid") Integer festivalid, @FormDataParam("preis") Double preis, @FormDataParam("datum") String datum, @FormDataParam("vip") Boolean vip) throws SQLException {
@@ -145,7 +145,7 @@ public class BesucherController {
         if (ticketid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("ticketid")).build();
         try {
             Connection connection = dataSource.getConnection();
-            String where = " WHERE  T.ID = " + ticketid + " ";
+            String where = " WHERE  T.ID = " + ticketid + " AND T.Besucher_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' ";
 
             String query = "SELECT T.Preis, T.Datum , T.VIP_Vermerk, T.Festival_ID " +
                     "FROM Ticket T  " + where;
@@ -173,4 +173,26 @@ public class BesucherController {
 
     }
 
+    @Path("tickets/{ticketid}")
+    @RolesAllowed({"BESUCHER"})
+    @DELETE // DELETE http://localhost:8080/tickets/123
+    public Response deleteTicket(@PathParam("ticketid") Integer ticketid) throws SQLException {
+        if (ticketid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("ticketid")).build();
+        try {
+            Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Ticket  WHERE ID = ? AND Besucher_User_Mailadresse = ? ");
+            preparedStatement.closeOnCompletion();
+            preparedStatement.setInt(1, ticketid);
+            preparedStatement.setObject(2, securityContext.getUserPrincipal().getName());
+            Integer row = preparedStatement.executeUpdate();
+            connection.close();
+            if (row == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (SQLException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
+
+    }
 }

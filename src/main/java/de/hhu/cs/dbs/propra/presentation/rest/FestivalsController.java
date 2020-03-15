@@ -37,7 +37,6 @@ public class FestivalsController {
     private UriInfo uriInfo;
 
     @Path("festivals")
-    //@RolesAllowed({"USER"})
     @GET // GET http://localhost:8080/festivals?bezeichnung=xyz
     public List<Map<String, Object>> getFastivals(@QueryParam("bezeichnung") String bezeichnung, @QueryParam("ort") String ort, @QueryParam("veranstalter") String veranstalter, @QueryParam("jahr") Integer jahr) throws SQLException {
 
@@ -95,7 +94,6 @@ public class FestivalsController {
     }
 
     @Path("festivals/{festivalid}/buehnen")
-    //@RolesAllowed({"USER"})
     @GET // GET http://localhost:8080/festivals/123/buehnen
     public Object getBuenenByFestivalId(@PathParam("festivalid") Integer festivalid, @QueryParam("bezeichnung") String bezeichnung, @QueryParam("sitzplaetze") Integer sitzplaetze) throws SQLException {
         if (festivalid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("festivalid")).build();
@@ -138,7 +136,6 @@ public class FestivalsController {
     }
 
     @Path("bands")
-    //@RolesAllowed({"USER"})
     @GET // GET http://localhost:8080/bands?
     public List<Map<String, Object>> getBands(@QueryParam("name") String name, @QueryParam("genre") String genre, @QueryParam("gruendungsjahr") Integer gruendungsjahr) throws SQLException {
         try {
@@ -192,7 +189,6 @@ public class FestivalsController {
     }
 
     @Path("festivals/{festivalid}/buehnen/{buehneid}/programmpunkte")
-    //@RolesAllowed({"USER"})
     @GET // GET http://localhost:8080/festivals/{festivalid}/buehnen/{buehneid}/programmpunkte
     public Object getProgrammpunkte(@PathParam("festivalid") Integer festivalid, @PathParam("buehneid") Integer buehneid, @QueryParam("bandname") String bandname, @QueryParam("dauer") Integer dauer) throws SQLException {
         if (festivalid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("festivalid")).build();

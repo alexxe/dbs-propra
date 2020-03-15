@@ -19,11 +19,12 @@ CREATE TABLE Ort (
 );
 
 CREATE TABLE Genre (
+    ID      INTEGER NOT NULL
+                           PRIMARY KEY,
     Name    VARCHAR NOT NULL
                     COLLATE NOCASE
                     CHECK   (length(Name) > 0 AND
                              Name NOT GLOB '*[^ -~]*')
-                    PRIMARY KEY
 );
 
 CREATE TABLE Festival (
@@ -176,13 +177,13 @@ CREATE TABLE hat(
 );
 
 CREATE TABLE gehoert_zu(
-    Genre_Name  VARCHAR NOT NULL
-                        REFERENCES Genre(Name)
+    Genre_ID  VARCHAR NOT NULL
+                        REFERENCES Genre(ID)
                         ON UPDATE CASCADE
                         ON DELETE CASCADE,
     Band_ID     INTEGER NOT NULL
                         REFERENCES Band(ID),
-    PRIMARY KEY (Genre_Name, Band_ID)
+    PRIMARY KEY (Genre_ID, Band_ID)
 );
 
 CREATE TABLE organisiert(

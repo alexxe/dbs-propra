@@ -70,12 +70,12 @@ INSERT INTO Veranstalter (User_Mailadresse, Name) VALUES ('thomas@chbr.com', 'Ch
 INSERT INTO Veranstalter (User_Mailadresse, Name) VALUES ('booking@bohlen.de', 'Bohlenholen');
 
 --Daten in Tabelle TICKET eintragen
-INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('249.95', true, 1, 'johndoe@gmx.de');
-INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('190.20', true, 2, 'johndoe@gmx.de');
-INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('90.20', false, 2, 'maxmustermann@web.de');
-INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('90.20', false, 2, 'hans@gmail.com');
-INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('52.00', false, 3, 'hans@gmail.com');
-INSERT INTO Ticket (Preis, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('312.30', false, 4, 'hans@gmail.com');
+INSERT INTO Ticket (Preis, Datum, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('249.95', '2020-07-10 12:30:00', true, 1, 'johndoe@gmx.de');
+INSERT INTO Ticket (Preis, Datum, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('190.20', '2020-07-24', true, 2, 'johndoe@gmx.de');
+INSERT INTO Ticket (Preis, Datum, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('90.20', '2020-07-24', false, 2, 'maxmustermann@web.de');
+INSERT INTO Ticket (Preis, Datum, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('90.20', '2020-07-24', false, 2, 'hans@gmail.com');
+INSERT INTO Ticket (Preis, Datum, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('52.00', '2019-06-05 15:00:00', false, 3, 'hans@gmail.com');
+INSERT INTO Ticket (Preis, Datum, VIP_Vermerk, Festival_ID, Besucher_User_Mailadresse) VALUES ('312.30', '2019-04-10', false, 4, 'hans@gmail.com');
 
 --Daten in Tabelle BAND eintragen
 INSERT INTO Band (Name, Gruendungsjahr) VALUES ('Rolling Stones', 1962);
@@ -100,15 +100,15 @@ INSERT INTO hat (Band_ID, Kuenstler_User_Mailadresse) VALUES (3, 'pittner@deichk
 INSERT INTO hat (Band_ID, Kuenstler_User_Mailadresse) VALUES (4, 'koljah@ag.de');
 
 --Daten in Tabelle GEHOERT_ZU eintragen
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Rock', 1);
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Blues', 1);
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Pop', 2);
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Hiphop', 2);
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Rock', 2);
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Hiphop', 3);
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Electropop', 3);
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Hiphop', 4);
-INSERT INTO gehoert_zu (Genre_Name, Band_ID) VALUES ('Punkrock', 4);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (1, 1);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (5, 1);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (3, 2);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (4, 2);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (1, 2);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (4, 3);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (6, 3);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (4, 4);
+INSERT INTO gehoert_zu (Genre_ID, Band_ID) VALUES (2, 4);
 
 --Daten in Tabelle ORGANISIERT eintragen
 INSERT INTO organisiert (Veranstalter_User_Mailadresse, Festival_ID) VALUES ('alfredausgedacht@freenet.nl', 1);
