@@ -111,5 +111,102 @@ public class KuenstlerController {
 
     }
 
+    @Path("bands/{bandid}/kuenstler")
+    @RolesAllowed({"KUENSTLER"})
+    @POST // POST http://localhost:8080/bands/123
+    public Response AddKuenstlerToBand(@PathParam("bandid") Integer bandid, @FormDataParam("kuenstlerid") Integer kuenstlerid) throws SQLException {
+        if (bandid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bandid")).build();
+        if (kuenstlerid == null)
+            return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("kuenstlerid")).build();
+        try {
+            Connection connection = dataSource.getConnection();
+            String query = "SELECT H.Band_ID FROM hat H  WHERE H.BAND_ID = " + bandid + " AND H.Kuenstler_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' ";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+
+            HashMap result = null;
+            while (resultSet.next()) {
+                HashMap entity = new HashMap<>();
+                entity.put("Band_ID", resultSet.getObject(1));
+                result = entity;
+            }
+            resultSet.close();
+            connection.close();
+
+            if (result == null) {
+                Response.status(Response.Status.FORBIDDEN).build();
+            }
+        } catch (SQLException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
+
+        String stringStatement = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            Connection connection = dataSource.getConnection();
+            stringStatement = "INSERT INTO hat(bandid, kuenstlerid) values(?,?);";
+            preparedStatement = connection.prepareStatement(stringStatement);
+            preparedStatement.closeOnCompletion();
+            preparedStatement.setObject(1, bandid);
+            preparedStatement.setObject(2, kuenstlerid);
+            preparedStatement.executeUpdate();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    @Path("bands/{bandid}/genres")
+    @RolesAllowed({"KUENSTLER"})
+    @POST // POST http://localhost:8080/bands/123
+    public Response AddGenreToBand(@PathParam("bandid") Integer bandid, @FormDataParam("genreid") Integer genreid) throws SQLException {
+        if (bandid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bandid")).build();
+        if (genreid == null)
+            return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("genreid")).build();
+        try {
+            Connection connection = dataSource.getConnection();
+            String query = "SELECT H.Band_ID FROM hat H  WHERE H.BAND_ID = " + bandid + " AND H.Kuenstler_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' ";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+
+            HashMap result = null;
+            while (resultSet.next()) {
+                HashMap entity = new HashMap<>();
+                entity.put("Band_ID", resultSet.getObject(1));
+                result = entity;
+            }
+            resultSet.close();
+            connection.close();
+
+            if (result == null) {
+                Response.status(Response.Status.FORBIDDEN).build();
+            }
+        } catch (SQLException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
+
+        String stringStatement = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            Connection connection = dataSource.getConnection();
+            stringStatement = "INSERT INTO gehoert_zu(genreid, bandid) values(?,?);";
+            preparedStatement = connection.prepareStatement(stringStatement);
+            preparedStatement.closeOnCompletion();
+            preparedStatement.setObject(1, genreid);
+            preparedStatement.setObject(2, bandid);
+            preparedStatement.executeUpdate();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
 
 }
