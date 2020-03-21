@@ -1,6 +1,7 @@
 package de.hhu.cs.dbs.propra.presentation.rest;
 
 import de.hhu.cs.dbs.propra.application.exceptions.APIError;
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.inject.Inject;
@@ -34,12 +35,12 @@ public class AnwenderController {
     @Path("veranstalter")
     @POST // POST http://localhost:8080/veranstalter
     public Response CreateVeranstalter(@FormDataParam("email") String email, @FormDataParam("passwort") String passwort, @FormDataParam("vorname") String vorname, @FormDataParam("nachname") String nachname, @FormDataParam("veranstaltername") String veranstaltername) throws SQLException {
-        if (email == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("email")).build();
-        if (passwort == null)
+        if (!StringUtils.isNotBlank(email)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("email")).build();
+        if (!StringUtils.isNotBlank(passwort))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("passwort")).build();
-        if (vorname == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("vorname")).build();
-        if (nachname == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("nachname")).build();
-        if (veranstaltername == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("veranstaltername")).build();
+        if (!StringUtils.isNotBlank(vorname)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("vorname")).build();
+        if (!StringUtils.isNotBlank(nachname)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("nachname")).build();
+        if (!StringUtils.isNotBlank(veranstaltername)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("veranstaltername")).build();
 
 
         Connection connection = dataSource.getConnection();
@@ -64,7 +65,7 @@ public class AnwenderController {
         }
         // Create Spiel
         try {
-            stringStatement = "INSERT INTO Veranstalter(User_Mailadresse, veranstaltername) values(?,?);";
+            stringStatement = "INSERT INTO Veranstalter(User_Mailadresse, Name) values(?,?);";
             preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, email);
@@ -119,12 +120,12 @@ public class AnwenderController {
     @Path("kuenstler")
     @POST // POST http://localhost:8080//kuenstler
     public Response CreateKuenstler(@FormDataParam("email") String email, @FormDataParam("passwort") String passwort, @FormDataParam("vorname") String vorname, @FormDataParam("nachname") String nachname, @FormDataParam("kuenstlername") String kuenstlername) throws SQLException {
-        if (email == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("email")).build();
-        if (passwort == null)
+        if (!StringUtils.isNotBlank(email)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("email")).build();
+        if (!StringUtils.isNotBlank(passwort))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("passwort")).build();
-        if (vorname == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("vorname")).build();
-        if (nachname == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("nachname")).build();
-        if (kuenstlername == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("kuenstlername")).build();
+        if (!StringUtils.isNotBlank(vorname)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("vorname")).build();
+        if (!StringUtils.isNotBlank(nachname)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("nachname")).build();
+        if (!StringUtils.isNotBlank(kuenstlername)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("kuenstlername")).build();
 
 
         Connection connection = dataSource.getConnection();
@@ -204,12 +205,12 @@ public class AnwenderController {
     @Path("besucher")
     @POST // POST http://localhost:8080///besucher
     public Response CreateBesucher(@FormDataParam("email") String email, @FormDataParam("passwort") String passwort, @FormDataParam("vorname") String vorname, @FormDataParam("nachname") String nachname, @FormDataParam("geburtsdatum") String geburtsdatum, @FormDataParam("telefonnummer") String telefonnummer) throws SQLException {
-        if (email == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("email")).build();
-        if (passwort == null)
+        if (!StringUtils.isNotBlank(email)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("email")).build();
+        if (!StringUtils.isNotBlank(passwort))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("passwort")).build();
-        if (vorname == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("vorname")).build();
-        if (nachname == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("nachname")).build();
-        if (geburtsdatum == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("geburtsdatum")).build();
+        if (!StringUtils.isNotBlank(vorname)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("vorname")).build();
+        if (!StringUtils.isNotBlank(nachname )) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("nachname")).build();
+        if (!StringUtils.isNotBlank(geburtsdatum)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("geburtsdatum")).build();
         try {
             new SimpleDateFormat("yyyy-MM-dd").parse(geburtsdatum);
         } catch (ParseException e) {
@@ -236,7 +237,7 @@ public class AnwenderController {
             connection.rollback();
             throw e;
         }
-        // Create Spiel
+        // Create Besucher
         try {
             stringStatement = "INSERT INTO Besucher(User_Mailadresse, Geburtsdatum, Telefonnummer) values(?,?,?);";
             preparedStatement = connection.prepareStatement(stringStatement);

@@ -16,10 +16,10 @@ INSERT INTO Genre (Name) VALUES ('Blues');
 INSERT INTO Genre (Name) VALUES ('Electropop');
 
 --Daten in Tabelle FESTIVAL eintragen
-INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_Bezeichnung) VALUES ('Splash', readfile('bild.png'), '2020-07-10', 'Graefenhainichen');
-INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_Bezeichnung) VALUES ('Juicy Beats', readfile('bild.png'), '2020-07-24', 'Dortmund');
-INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_Bezeichnung) VALUES ('Rock am Ring', readfile('bild.png'), '2019-06-05', 'Nuerburg');
-INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_Bezeichnung) VALUES ('Coachella', readfile('bild.png'), '2019-04-10', 'Indio');
+INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_ID) VALUES ('Splash', readfile('bild.png'), '2020-07-10', 2);
+INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_ID) VALUES ('Juicy Beats', readfile('bild.png'), '2020-07-24', 1);
+INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_ID) VALUES ('Rock am Ring', readfile('bild.png'), '2019-06-05', 3);
+INSERT INTO Festival (Bezeichnung, Bild, Datum, Ort_ID) VALUES ('Coachella', readfile('bild.png'), '2019-04-10', 4);
 
 --Daten in Tabelle BUEHNE eintragen
 INSERT INTO Buehne (Bezeichnung, Sitzplaetze, Stehplaetze, Festival_ID) VALUES ('Backyard', 50, 400, 1);

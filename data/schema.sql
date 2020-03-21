@@ -8,11 +8,12 @@ PRAGMA synchronous = NORMAL;
 
 /*ENTITAETEN*/
 CREATE TABLE Ort (
+    ID              INTEGER NOT NULL
+                         PRIMARY KEY,
     Bezeichnung   VARCHAR NOT NULL
                         COLLATE NOCASE
                         CHECK (length(Bezeichnung) > 0 AND
-                                Bezeichnung NOT GLOB '*[^ -~]*')
-                        PRIMARY KEY,
+                                Bezeichnung NOT GLOB '*[^ -~]*'),
     Land        VARCHAR NOT NULL
                         CHECK   (length(Land) > 0 AND
                                   Land NOT GLOB '*[^ -~]*')
@@ -37,8 +38,8 @@ CREATE TABLE Festival (
                             CHECK (length(Bild) > 0 AND HEX(Bild) GLOB '89504E470D0A1A0A*'),
     Datum           DATE    NOT NULL
                             CHECK (Datum IS date(Datum)),/* 'YYYY-MM-DD')),*/
-    Ort_Bezeichnung    VARCHAR NOT NULL
-                            REFERENCES Ort(Bezeichnung)
+    Ort_ID    VARCHAR NOT NULL
+                            REFERENCES Ort(ID)
                             ON UPDATE CASCADE
                             ON DELETE CASCADE
 );

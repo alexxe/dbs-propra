@@ -51,7 +51,7 @@ public class FestivalsController {
                 if (where.length() > 0) {
                     where = where + " AND ";
                 }
-                where = where + " F.Ort_Bezeichnung  = '" + ort + "' ";
+                where = where + " ORT.Bezeichnung  = '" + ort + "' ";
             }
             if (veranstalter != null) {
                 if (where.length() > 0) {
@@ -73,7 +73,7 @@ public class FestivalsController {
 
 
             String query = "SELECT F.ID, F.Bezeichnung , F.Datum, F.bild" +
-                    " FROM Festival F INNER JOIN organisiert O ON F.ID = O.Festival_ID INNER JOIN Veranstalter V ON V.User_Mailadresse = O.Veranstalter_User_Mailadresse " + where + orderBy;
+                    " FROM Festival F INNER JOIN organisiert O ON F.ID = O.Festival_ID INNER JOIN Veranstalter V ON V.User_Mailadresse = O.Veranstalter_User_Mailadresse INNER JOIN Ort ORT ON F.Ort_ID = ORT.ID " + where + orderBy;
             ResultSet resultSet = stmt.executeQuery(query);
             List<Map<String, Object>> entities = new ArrayList<>();
             Map<String, Object> entity;
@@ -148,7 +148,7 @@ public class FestivalsController {
                 if (where.length() > 0) {
                     where = where + " AND ";
                 }
-                where = where + " GZ.Genre_Name  = '" + genre + "' ";
+                where = where + " GR.Name  = '" + genre + "' ";
             }
             if (gruendungsjahr != null) {
                 if (where.length() > 0) {
@@ -164,7 +164,7 @@ public class FestivalsController {
             String orderBy = " ORDER BY F.datum ";
 
             String query = "SELECT DISTINCT B.ID, B.Name , B.Gruendungsjahr " +
-                    "FROM Band B  INNER JOIN gehoert_zu GZ ON GZ.Band_ID = B.ID " + where;
+                    "FROM Band B  INNER JOIN gehoert_zu GZ ON GZ.Band_ID = B.ID INNER JOIN Genre GR ON GR.ID = GZ.Genre_ID " + where;
             Statement stmt = connection.createStatement();
             ResultSet resultSet = stmt.executeQuery(query);
 

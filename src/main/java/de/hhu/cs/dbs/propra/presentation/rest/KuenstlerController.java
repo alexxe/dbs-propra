@@ -1,6 +1,7 @@
 package de.hhu.cs.dbs.propra.presentation.rest;
 
 import de.hhu.cs.dbs.propra.application.exceptions.APIError;
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.annotation.security.RolesAllowed;
@@ -35,7 +36,7 @@ public class KuenstlerController {
     @RolesAllowed({"KUENSTLER"})
     @POST // POST http://localhost:8080/bands
     public Response CreateBand(@FormDataParam("name") String name, @FormDataParam("gruendungsjahr") Integer gruendungsjahr, @FormDataParam("genreid") Integer genreid) throws SQLException {
-        if (name == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("name")).build();
+        if (!StringUtils.isNotBlank(name)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("name")).build();
         if (gruendungsjahr == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("gruendungsjahr")).build();
         if (genreid == null)

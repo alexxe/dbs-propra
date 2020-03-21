@@ -1,6 +1,7 @@
 package de.hhu.cs.dbs.propra.presentation.rest;
 
 import de.hhu.cs.dbs.propra.application.exceptions.APIError;
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.annotation.security.RolesAllowed;
@@ -99,13 +100,18 @@ public class BesucherController {
         if (festivalid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("festivalid")).build();
         if (preis == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("preis")).build();
-        if (datum == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
+        if (!StringUtils.isNotBlank(datum)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
         if (vip == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("vip")).build();
 
         try {
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(datum);
         } catch (ParseException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
+            try {
+                new SimpleDateFormat("yyyy-MM-dd").parse(datum);
+            } catch (ParseException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
+            }
+
         }
 
         Connection connection = dataSource.getConnection();
