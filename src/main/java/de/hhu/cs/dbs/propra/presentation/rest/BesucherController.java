@@ -108,7 +108,7 @@ public class BesucherController {
         } catch (ParseException e) {
             try {
                 new SimpleDateFormat("yyyy-MM-dd").parse(datum);
-            } catch (ParseException e) {
+            } catch (ParseException ex) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
             }
 
