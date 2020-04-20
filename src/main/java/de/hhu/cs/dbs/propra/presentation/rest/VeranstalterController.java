@@ -1,6 +1,7 @@
 package de.hhu.cs.dbs.propra.presentation.rest;
 
 import de.hhu.cs.dbs.propra.application.exceptions.APIError;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -9,6 +10,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.io.InputStream;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -91,12 +93,12 @@ public class VeranstalterController {
     @Path("festivals")
     @RolesAllowed({"VERANSTALTER"})
     @POST // POST http://localhost:8080/festivals
-    public Response CreateFestival(@FormDataParam("bezeichnung") String bezeichnung, @FormDataParam("datum") String datum, @FormDataParam("bild") String bild, @FormDataParam("ortid") Integer ortid) throws SQLException {
+    public Response CreateFestival(@FormDataParam("bezeichnung") String bezeichnung, @FormDataParam("datum") String datum, @FormDataParam("bild") InputStream bild, @FormDataParam("ortid") Integer ortid) throws SQLException {
         if (!StringUtils.isNotBlank(bezeichnung))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bezeichnung")).build();
         if (!StringUtils.isNotBlank(datum))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
-        if (!StringUtils.isNotBlank(bild))
+        if (bild == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bild")).build();
         if (ortid == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("ortid")).build();
@@ -108,16 +110,35 @@ public class VeranstalterController {
         }
 
         Connection connection = dataSource.getConnection();
+        {
+            String query = "SELECT ID FROM Ort WHERE ID = " + ortid;
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.FORBIDDEN).entity(new APIError("ortid")).build();
+            }
+
+        }
+
+        byte[] bytes;
+        try {
+            bytes = IOUtils.toByteArray(bild);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new BadRequestException(ex.getMessage());
+        }
+
         connection.setAutoCommit(false);
         int new_id;
         String stringStatement = null;
         PreparedStatement preparedStatement = null;
         try {
+
             stringStatement = "INSERT INTO Festival(Bezeichnung, Bild, Datum, Ort_ID) values(?,?,?,?);";
             preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, bezeichnung);
-            preparedStatement.setObject(2, bild);
+            preparedStatement.setObject(2, bytes);
             preparedStatement.setObject(3, datum);
             preparedStatement.setObject(4, ortid);
             preparedStatement.executeUpdate();
@@ -193,30 +214,26 @@ public class VeranstalterController {
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("stehplaetze")).build();
 
         Connection connection = dataSource.getConnection();
-        String stringStatement = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-            String query = "SELECT O.Festival_ID FROM organisiert O  WHERE O.Veranstalter_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' AND O.Festival_ID = " + festivalid + " ";
+        {
+            String query = "SELECT ID FROM Festival WHERE ID = '" + festivalid + "'";
             Statement stmt = connection.createStatement();
             ResultSet resultSet = stmt.executeQuery(query);
-
-            HashMap result = null;
-            while (resultSet.next()) {
-                HashMap entity = new HashMap<>();
-                entity.put("Festival_ID", resultSet.getObject(1));
-                result = entity;
-            }
-            resultSet.close();
-
-
-            if (result == null) {
-                return Response.status(Response.Status.FORBIDDEN).build();
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("festivalid")).build();
             }
 
-        } catch (SQLException ex) {
-            throw new BadRequestException(ex.getMessage());
         }
+        {
+            String query = "SELECT * FROM organisiert WHERE Festival_ID = '" + festivalid + "' AND Veranstalter_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "'";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.FORBIDDEN).entity(new APIError("festivalid")).build();
+            }
+
+        }
+        String stringStatement = null;
+        PreparedStatement preparedStatement = null;
 
         //connection.setAutoCommit(false);
         int new_id;
@@ -303,6 +320,42 @@ public class VeranstalterController {
         }
 
         Connection connection = dataSource.getConnection();
+        {
+            String query = "SELECT ID FROM Festival WHERE ID = '" + festivalid + "'";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("festivalid")).build();
+            }
+
+        }
+        {
+            String query = "SELECT ID FROM Buehne WHERE ID = '" + buehneid + "'";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("buehneid")).build();
+            }
+
+        }
+        {
+            String query = "SELECT ID FROM Band WHERE ID = '" + bandid + "'";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("bandid")).build();
+            }
+
+        }
+        {
+            String query = "SELECT * FROM organisiert WHERE Festival_ID = '" + festivalid + "' AND Veranstalter_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "'";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.FORBIDDEN).entity(new APIError("festivalid")).build();
+            }
+
+        }
         String stringStatement = null;
         PreparedStatement preparedStatement = null;
 
@@ -356,14 +409,14 @@ public class VeranstalterController {
     @Path("festivals/{festivalid}")
     @RolesAllowed({"VERANSTALTER"})
     @PATCH // PATCH http://localhost:8080/festivals/123
-    public Response UpdateFestival(@PathParam("festivalid") String festivalid, @FormDataParam("bezeichnung") String bezeichnung, @FormDataParam("datum") String datum, @FormDataParam("bild") String bild) throws SQLException {
+    public Response UpdateFestival(@PathParam("festivalid") String festivalid, @FormDataParam("bezeichnung") String bezeichnung, @FormDataParam("datum") String datum, @FormDataParam("bild") InputStream bild) throws SQLException {
         if (!StringUtils.isNotBlank(festivalid))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("festivalid")).build();
         if (!StringUtils.isNotBlank(bezeichnung))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bezeichnung")).build();
         if (!StringUtils.isNotBlank(datum))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("datum")).build();
-        if (!StringUtils.isNotBlank(bild))
+        if (bild == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bild")).build();
 
 
@@ -377,29 +430,32 @@ public class VeranstalterController {
         Connection connection = dataSource.getConnection();
         String stringStatement = null;
         PreparedStatement preparedStatement = null;
-
-        try {
-            String query = "SELECT O.Festival_ID FROM organisiert O  WHERE O.Veranstalter_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' AND O.Festival_ID = " + festivalid + " ";
+        {
+            String query = "SELECT ID FROM Festival WHERE ID = '" + festivalid + "'";
             Statement stmt = connection.createStatement();
             ResultSet resultSet = stmt.executeQuery(query);
-
-            HashMap result = null;
-            while (resultSet.next()) {
-                HashMap entity = new HashMap<>();
-                entity.put("Festival_ID", resultSet.getObject(1));
-                result = entity;
-            }
-            resultSet.close();
-
-
-            if (result == null) {
-                return Response.status(Response.Status.FORBIDDEN).build();
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("festivalid")).build();
             }
 
-        } catch (SQLException ex) {
-            throw new BadRequestException(ex.getMessage());
+        }
+        {
+            String query = "SELECT * FROM organisiert WHERE Festival_ID = '" + festivalid + "' AND Veranstalter_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "'";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.FORBIDDEN).entity(new APIError("festivalid")).build();
+            }
+
         }
 
+        byte[] bytes;
+        try {
+            bytes = IOUtils.toByteArray(bild);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new BadRequestException(ex.getMessage());
+        }
         //connection.setAutoCommit(false);
         int new_id;
 
@@ -409,7 +465,7 @@ public class VeranstalterController {
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, bezeichnung);
             preparedStatement.setObject(2, datum);
-            preparedStatement.setObject(3, bild);
+            preparedStatement.setObject(3, bytes);
             preparedStatement.executeUpdate();
             new_id = preparedStatement.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {

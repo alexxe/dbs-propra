@@ -115,6 +115,24 @@ public class BesucherController {
         }
 
         Connection connection = dataSource.getConnection();
+        {
+            String query = "SELECT ID FROM Festival WHERE ID = " + festivalid;
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("festivalid")).build();
+            }
+
+        }
+        {
+            String query = "SELECT ID FROM Ticket WHERE Festival_ID = " + festivalid + " AND Besucher_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "'";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (resultSet.next()) {
+                return Response.status(Response.Status.FORBIDDEN).entity(new APIError("festivalid")).build();
+            }
+
+        }
         connection.setAutoCommit(false);
         // Create User
         int new_id;
@@ -170,7 +188,7 @@ public class BesucherController {
             resultSet.close();
             connection.close();
             if (result == null) {
-                throw new NotFoundException("Resource ticketid '" + ticketid + "' not found");
+                Response.status(Response.Status.NOT_FOUND).entity(new APIError("ticketid")).build();
             }
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (SQLException ex) {
@@ -186,6 +204,17 @@ public class BesucherController {
         if (ticketid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("ticketid")).build();
         try {
             Connection connection = dataSource.getConnection();
+            String query = "SELECT Besucher_User_Mailadresse FROM Ticket WHERE ID = " + ticketid;
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            } else {
+                String email = resultSet.getString(1);
+                if (!securityContext.getUserPrincipal().getName().equals(email)) {
+                    return Response.status(Response.Status.FORBIDDEN).entity(new APIError("ticketid")).build();
+                }
+            }
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Ticket  WHERE ID = ? AND Besucher_User_Mailadresse = ? ");
             preparedStatement.closeOnCompletion();
             preparedStatement.setInt(1, ticketid);
@@ -193,7 +222,7 @@ public class BesucherController {
             Integer row = preparedStatement.executeUpdate();
             connection.close();
             if (row == 0) {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("ticketid")).build();
             }
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (SQLException ex) {

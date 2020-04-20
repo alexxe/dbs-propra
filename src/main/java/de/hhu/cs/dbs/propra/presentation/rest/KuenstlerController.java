@@ -43,6 +43,15 @@ public class KuenstlerController {
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("genreid")).build();
 
         Connection connection = dataSource.getConnection();
+        {
+            String query = "SELECT ID FROM Genre WHERE ID = '" + genreid + "'";
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+            if (!resultSet.next()) {
+                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("genreid")).build();
+            }
+
+        }
         connection.setAutoCommit(false);
         // Create Band
         int new_id;
@@ -115,28 +124,41 @@ public class KuenstlerController {
     @Path("bands/{bandid}/kuenstler")
     @RolesAllowed({"KUENSTLER"})
     @POST // POST http://localhost:8080/bands/123
-    public Response AddKuenstlerToBand(@PathParam("bandid") Integer bandid, @FormDataParam("kuenstlerid") Integer kuenstlerid) throws SQLException {
+    public Response AddKuenstlerToBand(@PathParam("bandid") Integer bandid, @FormDataParam("kuenstlerid") String kuenstlerid) throws SQLException {
         if (bandid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bandid")).build();
-        if (kuenstlerid == null)
+        if (!StringUtils.isNotBlank(kuenstlerid))
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("kuenstlerid")).build();
         try {
             Connection connection = dataSource.getConnection();
-            String query = "SELECT H.Band_ID FROM hat H  WHERE H.BAND_ID = " + bandid + " AND H.Kuenstler_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' ";
-            Statement stmt = connection.createStatement();
-            ResultSet resultSet = stmt.executeQuery(query);
+            {
+                String query = "SELECT ID FROM Band WHERE ID = '" + bandid + "'";
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.NOT_FOUND).entity(new APIError("bandid")).build();
+                }
 
-            HashMap result = null;
-            while (resultSet.next()) {
-                HashMap entity = new HashMap<>();
-                entity.put("Band_ID", resultSet.getObject(1));
-                result = entity;
             }
-            resultSet.close();
-            connection.close();
+            {
+                String query = "SELECT User_Mailadresse FROM Kuenstler WHERE User_Mailadresse = '" + kuenstlerid + "'";
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.NOT_FOUND).entity(new APIError("kuenstlerid")).build();
+                }
 
-            if (result == null) {
-                Response.status(Response.Status.FORBIDDEN).build();
             }
+            {
+                String query = "SELECT H.Band_ID FROM hat H  WHERE H.BAND_ID = " + bandid + " AND H.Kuenstler_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' ";
+
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.FORBIDDEN).entity(new APIError("bandid")).build();
+                }
+
+            }
+
         } catch (SQLException ex) {
             throw new BadRequestException(ex.getMessage());
         }
@@ -145,7 +167,7 @@ public class KuenstlerController {
         PreparedStatement preparedStatement = null;
         try {
             Connection connection = dataSource.getConnection();
-            stringStatement = "INSERT INTO hat(bandid, kuenstlerid) values(?,?);";
+            stringStatement = "INSERT INTO hat(BAND_ID, Kuenstler_User_Mailadresse) values(?,?);";
             preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, bandid);
@@ -170,22 +192,35 @@ public class KuenstlerController {
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("genreid")).build();
         try {
             Connection connection = dataSource.getConnection();
-            String query = "SELECT H.Band_ID FROM hat H  WHERE H.BAND_ID = " + bandid + " AND H.Kuenstler_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' ";
-            Statement stmt = connection.createStatement();
-            ResultSet resultSet = stmt.executeQuery(query);
+            {
+                String query = "SELECT ID FROM Band WHERE ID = '" + bandid + "'";
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.NOT_FOUND).entity(new APIError("bandid")).build();
+                }
 
-            HashMap result = null;
-            while (resultSet.next()) {
-                HashMap entity = new HashMap<>();
-                entity.put("Band_ID", resultSet.getObject(1));
-                result = entity;
             }
-            resultSet.close();
-            connection.close();
+            {
+                String query = "SELECT ID FROM Genre WHERE ID = '" + genreid + "'";
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.NOT_FOUND).entity(new APIError("genreid")).build();
+                }
 
-            if (result == null) {
-                Response.status(Response.Status.FORBIDDEN).build();
             }
+            {
+                String query = "SELECT H.Band_ID FROM hat H  WHERE H.BAND_ID = " + bandid + " AND H.Kuenstler_User_Mailadresse = '" + securityContext.getUserPrincipal().getName() + "' ";
+
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.FORBIDDEN).entity(new APIError("bandid")).build();
+                }
+
+            }
+
         } catch (SQLException ex) {
             throw new BadRequestException(ex.getMessage());
         }
@@ -194,7 +229,7 @@ public class KuenstlerController {
         PreparedStatement preparedStatement = null;
         try {
             Connection connection = dataSource.getConnection();
-            stringStatement = "INSERT INTO gehoert_zu(genreid, bandid) values(?,?);";
+            stringStatement = "INSERT INTO gehoert_zu(Genre_ID, Band_ID) values(?,?);";
             preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, genreid);

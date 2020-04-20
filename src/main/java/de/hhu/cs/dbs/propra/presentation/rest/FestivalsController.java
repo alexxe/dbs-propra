@@ -99,6 +99,15 @@ public class FestivalsController {
         if (festivalid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("festivalid")).build();
         try {
             Connection connection = dataSource.getConnection();
+            {
+                String query = "SELECT ID FROM Festival WHERE ID = '" + festivalid + "'";
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.NOT_FOUND).entity(new APIError("festivalid")).build();
+                }
+
+            }
             String where = " WHERE  B.Festival_ID =" + festivalid + " ";
             if (bezeichnung != null) {
                 where = where + " AND B.Bezeichnung  LIKE '%" + bezeichnung + "%' ";
@@ -195,6 +204,24 @@ public class FestivalsController {
         if (buehneid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("buehneid")).build();
         try {
             Connection connection = dataSource.getConnection();
+            {
+                String query = "SELECT ID FROM Festival WHERE ID = '" + festivalid + "'";
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.NOT_FOUND).entity(new APIError("festivalid")).build();
+                }
+
+            }
+            {
+                String query = "SELECT ID FROM Buehne WHERE ID = '" + buehneid + "'";
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (!resultSet.next()) {
+                    return Response.status(Response.Status.NOT_FOUND).entity(new APIError("buehneid")).build();
+                }
+
+            }
             String where = " WHERE  B.Festival_ID =" + festivalid + " AND P.Buehne_ID = " + buehneid + " ";
             if (bandname != null) {
                 where = where + " AND BN.Name = '" + bandname + "' ";
