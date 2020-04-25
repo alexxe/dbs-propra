@@ -204,6 +204,7 @@ public class BesucherController {
         if (ticketid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("ticketid")).build();
         try {
             Connection connection = dataSource.getConnection();
+
             String query = "SELECT Besucher_User_Mailadresse FROM Ticket WHERE ID = " + ticketid;
             Statement stmt = connection.createStatement();
             ResultSet resultSet = stmt.executeQuery(query);
@@ -221,9 +222,6 @@ public class BesucherController {
             preparedStatement.setObject(2, securityContext.getUserPrincipal().getName());
             Integer row = preparedStatement.executeUpdate();
             connection.close();
-            if (row == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity(new APIError("ticketid")).build();
-            }
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (SQLException ex) {
             throw new BadRequestException(ex.getMessage());
