@@ -125,7 +125,7 @@ public class AnwenderController {
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("passwort")).build();
         if (!StringUtils.isNotBlank(vorname)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("vorname")).build();
         if (!StringUtils.isNotBlank(nachname)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("nachname")).build();
-        if (!StringUtils.isNotBlank(kuenstlername)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("kuenstlername")).build();
+        //if (!StringUtils.isNotBlank(kuenstlername)) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("kuenstlername")).build();
 
 
         Connection connection = dataSource.getConnection();
