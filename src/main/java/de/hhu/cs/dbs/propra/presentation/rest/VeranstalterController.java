@@ -312,7 +312,7 @@ public class VeranstalterController {
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startzeitpunkt);
         } catch (ParseException e) {
             try {
-                new SimpleDateFormat("yyyy-MM-dd").parse(startzeitpunkt);
+                new SimpleDateFormat("HH:mm:ss").parse(startzeitpunkt);
             } catch (ParseException ex) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("startzeitpunkt")).build();
             }
