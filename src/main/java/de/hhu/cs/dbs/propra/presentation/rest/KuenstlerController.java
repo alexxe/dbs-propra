@@ -124,10 +124,11 @@ public class KuenstlerController {
     @Path("bands/{bandid}/kuenstler")
     @RolesAllowed({"KUENSTLER"})
     @POST // POST http://localhost:8080/bands/123
-    public Response AddKuenstlerToBand(@PathParam("bandid") Integer bandid, @FormDataParam("kuenstlerid") String kuenstlerid) throws SQLException {
+    public Response AddKuenstlerToBand(@PathParam("bandid") Integer bandid, @FormDataParam("kuenstlerid") Integer kuenstlerid) throws SQLException {
         if (bandid == null) return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("bandid")).build();
-        if (!StringUtils.isNotBlank(kuenstlerid))
+        if (kuenstlerid == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new APIError("kuenstlerid")).build();
+        String kuenstlerEmail = null;
         try {
             Connection connection = dataSource.getConnection();
             {
@@ -139,12 +140,18 @@ public class KuenstlerController {
                 }
 
             }
+
             {
-                String query = "SELECT User_Mailadresse FROM Kuenstler WHERE User_Mailadresse = '" + kuenstlerid + "'";
+                String query = "SELECT User_Mailadresse FROM Kuenstler WHERE ID = " + kuenstlerid;
                 Statement stmt = connection.createStatement();
                 ResultSet resultSet = stmt.executeQuery(query);
                 if (!resultSet.next()) {
                     return Response.status(Response.Status.NOT_FOUND).entity(new APIError("kuenstlerid")).build();
+                } else {
+                    kuenstlerEmail =  resultSet.getString(1);
+                    if (kuenstlerEmail.equals(securityContext.getUserPrincipal().getName())) {
+                        return Response.status(Response.Status.FORBIDDEN).entity(new APIError("kuenstlerid")).build();
+                    }
                 }
 
             }
@@ -155,6 +162,16 @@ public class KuenstlerController {
                 ResultSet resultSet = stmt.executeQuery(query);
                 if (!resultSet.next()) {
                     return Response.status(Response.Status.FORBIDDEN).entity(new APIError("bandid")).build();
+                }
+
+            }
+            {
+                String query = "SELECT H.Band_ID FROM hat H  WHERE H.BAND_ID = " + bandid + " AND H.Kuenstler_User_Mailadresse = '" + kuenstlerEmail + "' ";
+
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(query);
+                if (resultSet.next()) {
+                    return Response.status(Response.Status.FORBIDDEN).entity(new APIError("kuenstlerid")).build();
                 }
 
             }
@@ -171,7 +188,7 @@ public class KuenstlerController {
             preparedStatement = connection.prepareStatement(stringStatement);
             preparedStatement.closeOnCompletion();
             preparedStatement.setObject(1, bandid);
-            preparedStatement.setObject(2, kuenstlerid);
+            preparedStatement.setObject(2, kuenstlerEmail);
             preparedStatement.executeUpdate();
             connection.close();
         } catch (SQLException e) {
@@ -193,7 +210,7 @@ public class KuenstlerController {
         try {
             Connection connection = dataSource.getConnection();
             {
-                String query = "SELECT ID FROM Band WHERE ID = '" + bandid + "'";
+                String query = "SELECT ID FROM Band WHERE ID = " + bandid;
                 Statement stmt = connection.createStatement();
                 ResultSet resultSet = stmt.executeQuery(query);
                 if (!resultSet.next()) {
@@ -202,7 +219,7 @@ public class KuenstlerController {
 
             }
             {
-                String query = "SELECT ID FROM Genre WHERE ID = '" + genreid + "'";
+                String query = "SELECT ID FROM Genre WHERE ID = " + genreid;
                 Statement stmt = connection.createStatement();
                 ResultSet resultSet = stmt.executeQuery(query);
                 if (!resultSet.next()) {

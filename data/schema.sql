@@ -60,7 +60,7 @@ CREATE TABLE Buehne (
 );
 
 CREATE TABLE User (
-    Mailadresse VARCHAR PRIMARY KEY
+    Mailadresse VARCHAR UNIQUE
                         NOT NULL
                         COLLATE NOCASE
                         CHECK /*(length(Mailadresse) > 0 AND*/
@@ -82,23 +82,28 @@ CREATE TABLE User (
     Nachname    VARCHAR NOT NULL
                         CHECK   (length(Nachname) > 0 AND
                                    Nachname NOT GLOB '*[^A-Za-z]*' AND
-                                   Nachname NOT GLOB '*[^ -~]*')
+                                   Nachname NOT GLOB '*[^ -~]*'),
+    ID          INTEGER NOT NULL
+        PRIMARY KEY
+
 );
 
 CREATE TABLE Kuenstler (
     User_Mailadresse    VARCHAR NOT NULL
-                                PRIMARY KEY
+                                UNIQUE
                                 REFERENCES User(Mailadresse)
                                 ON UPDATE CASCADE
                                 ON DELETE CASCADE,
     /*optionales Attribut*/
     Kuenstlername       VARCHAR CHECK   (length(Kuenstlername) > 0 AND
-                                        Kuenstlername NOT GLOB '*[^ -~]*')
+                                        Kuenstlername NOT GLOB '*[^ -~]*'),
+    ID          INTEGER NOT NULL
+        PRIMARY KEY
 );
 
 CREATE TABLE Besucher (
     User_Mailadresse   VARCHAR  NOT NULL
-                                PRIMARY KEY
+                                UNIQUE
                                 REFERENCES User(Mailadresse)
                                 ON UPDATE CASCADE
                                 ON DELETE CASCADE,
@@ -106,18 +111,22 @@ CREATE TABLE Besucher (
                                 CHECK (Geburtsdatum IS date(Geburtsdatum)),/* 'YYYY-MM-DD')),*/
     /*optionales Attribut*/
     Telefonnummer       VARCHAR CHECK(length(Telefonnummer) > 0 AND
-                                      Telefonnummer GLOB '+49*' AND substr(Telefonnummer,4) NOT GLOB '*[^0-9]*')
+                                      Telefonnummer GLOB '+49*' AND substr(Telefonnummer,4) NOT GLOB '*[^0-9]*'),
+    ID          INTEGER NOT NULL
+        PRIMARY KEY
 );
 
 CREATE TABLE Veranstalter (
     User_Mailadresse    VARCHAR NOT NULL
-                                PRIMARY KEY
+                                UNIQUE
                                 REFERENCES User(Mailadresse)
                                 ON UPDATE CASCADE
                                 ON DELETE CASCADE,
     Name                VARCHAR NOT NULL
                                 CHECK   (length(Name) > 0 AND
-                                        Name NOT GLOB '*[^ -~]*')
+                                        Name NOT GLOB '*[^ -~]*'),
+    ID          INTEGER NOT NULL
+        PRIMARY KEY
 );
 
 CREATE TABLE Ticket (
